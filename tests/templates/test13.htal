@@ -1,0 +1,3 @@
+<html><body tal:define="here 'Здесь'">
+<span tal:replace="here">Here</span> должна быть <span tal:replace="cyrillic">Cyrillic</span>
+</body></html>
