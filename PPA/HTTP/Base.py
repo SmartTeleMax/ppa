@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.32 2004/01/30 15:55:17 ods Exp $
+# $Id: Base.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 import logging
@@ -185,7 +185,7 @@ class Response:
                                             mime_type, self.charsetErrors)
         else:
             self.charsetErrors = errors
-        self.headers['Content-Type'] = mime_type
+        self.headers['Content-Type'] = header
 
 
 class Adapter:
