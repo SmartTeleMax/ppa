@@ -1,4 +1,4 @@
-# $Id: _TALCommon.py,v 1.2 2004/04/09 16:17:54 ods Exp $
+# $Id: _TALCommon.py,v 1.3 2004/04/12 09:38:22 ods Exp $
 
 from TAL.TALDefs import TALESError
 from TAL.TALGenerator import TALGenerator
@@ -123,7 +123,7 @@ class Interpreter:
     
     def evaluateText(self, expr):
         expr = self.evaluate(expr)
-        if expr in (default, None):
+        if expr is default or expr is None:
             return expr
         else:
             return '%s' % (expr,)
