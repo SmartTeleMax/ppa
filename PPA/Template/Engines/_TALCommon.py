@@ -1,4 +1,4 @@
-# $Id: _TALCommon.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: _TALCommon.py,v 1.2 2004/04/09 16:17:54 ods Exp $
 
 from TAL.TALDefs import TALESError
 from TAL.TALGenerator import TALGenerator
@@ -126,7 +126,7 @@ class Interpreter:
         if expr in (default, None):
             return expr
         else:
-            return '%s' % expr
+            return '%s' % (expr,)
     evaluateStructure = evaluateText
     
     def evaluateMacro(self, expr):
