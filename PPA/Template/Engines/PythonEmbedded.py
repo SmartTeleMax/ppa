@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.4 2005/03/05 14:13:57 corva Exp $
+# $Id: PythonEmbedded.py,v 1.5 2005/03/19 12:07:48 ods Exp $
 
 import string, re
 
@@ -115,7 +115,8 @@ class Parser:
 def compile_unicode(source, filename, method):
     '''Compile Python source represented as unicode object. All string
     litterals containing non-ASCII character will be unicode objects.'''
-    import parser, token
+    import parser
+    from token import ISNONTERMINAL, STRING
     source = source.encode('utf-8')  # parser complains about unicode source
     if method=='exec':
         ast = parser.suite(source)
@@ -132,9 +133,9 @@ def compile_unicode(source, filename, method):
         except StopIteration:
             stack.pop()
             continue
-        if token.ISNONTERMINAL(node[0]):
+        if ISNONTERMINAL(node[0]):
             stack.append(iter(node[1:]).next)
-        elif node[0]==token.STRING:
+        elif node[0]==STRING:
             s = eval(node[1])
             try:
                 s.decode('ascii')
