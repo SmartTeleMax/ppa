@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<document xmlns:tal="http://xml.zope.org/namespaces/tal"
-          xmlns:metal="http://xml.zope.org/namespaces/metal">
-<title tal:content="title.upper()">Title</title>
-<list>
-  <item tal:repeat="item range(3)">Item <span tal:replace="item+1">#</span></item>
-</list>
-<link tal:content="var">Var</link>
-</document>
