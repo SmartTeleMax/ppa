@@ -1,4 +1,4 @@
-# $Id: Cook.py,v 1.4 2004/04/07 15:14:47 ods Exp $
+# $Id: Cook.py,v 1.1.1.1 2004/04/09 13:18:10 ods Exp $
 
 from __future__ import generators
 import re
@@ -6,7 +6,7 @@ import re
 
 def quoteHTML(text, nl2br=0, pre=0):
     for char, repl in [('&', '&amp;'),
-                       ('"', '&quote;'),
+                       ('"', '&quot;'),
                        ('<', '&lt;'),
                        ('>', '&gt;')]:
         text = text.replace(char, repl)
