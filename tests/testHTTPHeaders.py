@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: testHTTPHeaders.py,v 1.2 2004/04/09 15:48:36 ods Exp $
+# $Id: testHTTPHeaders.py,v 1.3 2004/04/12 10:00:16 ods Exp $
 
 import unittest, sys, os
 
@@ -49,7 +49,7 @@ class HeadersTest(unittest.TestCase):
         self.assertEqual(len(h), 3)
         self.assertSameItems(h.keys(), ['key1', 'key2'])
         self.assertEqual(h['key2'], 'value2')
-        self.assertEqual(h['key1'], 'value1 VALUE1')
+        self.assertEqual(h['key1'], 'value1, VALUE1')
         h['KEY2'] = 'Value2'
         self.assertEqual(len(h), 3)
         self.assertSameItems(h.keys(), ['key1', 'key2'])
