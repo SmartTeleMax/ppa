@@ -1,0 +1,2 @@
+include LICENSE STYLE
+recursive-include tests *.py *.raw *.pysi *.pyem *.*tal *.dtml
