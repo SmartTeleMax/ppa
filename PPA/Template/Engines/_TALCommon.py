@@ -1,4 +1,4 @@
-# $Id: _TALCommon.py,v 1.2 2003/11/25 12:08:52 ods Exp $
+# $Id: _TALCommon.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 from TAL.TALDefs import TALESError
 from TAL.TALGenerator import TALGenerator
@@ -11,7 +11,33 @@ class CompileError(Exception): pass
 class Compiler:
 
     def compile(self, expr):
-        return compile(expr, '', 'eval')
+        if type(expr) is unicode:
+            code = compile(expr.encode('utf-8'), '', 'eval')
+            # XXX This stupid compiler encoded all strings to utf-8, so we
+            # need to convert them to unicode.
+            consts = []
+            for const in code.co_consts:
+                if type(const) is str:
+                    # We have to leave ascii strings just str not unicode
+                    # because they can be python function keywords or
+                    # something else
+                    try:
+                        const.decode('ascii')
+                    except UnicodeError: # UnicodeDecodeError
+                        consts.append(const.decode('utf-8'))
+                    else:
+                        consts.append(const)
+                else:
+                    consts.append(const)
+            import new
+            code = new.code(code.co_argcount, code.co_nlocals,
+                            code.co_stacksize, code.co_flags, code.co_code,
+                            tuple(consts), code.co_names, code.co_varnames,
+                            code.co_filename, code.co_name,
+                            code.co_firstlineno, code.co_lnotab)
+        else:
+            code = compile(expr, '', 'eval')
+        return code
 
     def getCompilerError(self):
         return CompileError
@@ -100,12 +126,12 @@ class Interpreter:
         if expr in (default, None):
             return expr
         else:
-            return str(expr)
+            return '%s' % expr
     evaluateStructure = evaluateText
     
     def evaluateMacro(self, expr):
         expr = self.evaluate(expr)
-        if isinstance(expr, str):
+        if type(expr) in (str, unicode):
             return self.macros[expr]
         elif isinstance(expr, tuple) and len(expr)==2:
             program, macros = self.get_template(expr[0]).getProgram()
