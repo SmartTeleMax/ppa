@@ -1,10 +1,20 @@
-# $Id: XMLTAL.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: XMLTAL.py,v 1.2 2004/04/12 09:40:52 ods Exp $
 
 import _TALCommon
 from TAL.TALParser import TALParser
 from TAL.XMLParser import XMLParser
 from TAL.TALGenerator import TALGenerator
 from TAL.TALDefs import XML_NS
+
+# XXX zLOG module is outside of TAL -- need some hacks.
+try:
+    import zLOG
+except ImportError:
+    import sys, new
+    zLOG = new.module('zLOG')
+    zLOG.LOG = lambda *args: None
+    zLOG.INFO = zLOG.PROBLEM = None
+    sys.modules['zLOG'] = zLOG
 
 
 class Engine(_TALCommon.Engine):
