@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: PythonEmbedded.py,v 1.2 2004/04/09 16:18:46 ods Exp $
 
 import string, re
 
@@ -112,8 +112,6 @@ class Parser:
         return 'html'
 
 
-from StringIO import StringIO
-
 class Compiler:
 
     def __init__(self, source, filename):
@@ -122,16 +120,15 @@ class Compiler:
         
     def process(self):
         parser = Parser(self.source, self.filename)
-        self.content = content = StringIO()
-        self.write = write = self.content.write
+        self.content = content = []
+        self.write = write = self.content.append
         for state, s in parser.process():
-            if content.tell():
-                content.seek(-1, 2)
-                char = content.read()
-                if char not in ' \n\t;':
+            if content and content[-1]:
+                if content[-1][-1] not in ' \n\t;':
                     write('; ')
             getattr(self, 'process_'+state)(s)
-        source = self.content.getvalue()+'\n'
+        content.append('\n')
+        source = ''.join(content)
         try:
             if type(source) is unicode:
                 code = compile(source.encode('utf-8'), self.filename, 'exec')
