@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: Base.py,v 1.2 2004/04/12 13:01:29 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 import logging
@@ -41,7 +41,8 @@ class Headers:
     def __getitem__(self, key):
         '''Get header. If there are several header with the same key, their
         values are joined.'''
-        return ' '.join(self._headers_map[key.lower()])
+        # RFC 2616, 4.2 Message Headers
+        return ', '.join(self._headers_map[key.lower()])
 
     def __setitem__(self, key, value):
         '''Replace headers with the same key.'''
