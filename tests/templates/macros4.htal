@@ -1,0 +1,7 @@
+<html metal:define-macro="main">
+<head><title><span metal:define-slot="title">Title</span></title></head>
+<body>
+<h1><span metal:define-slot="title">Title</span></h1>
+<p><span metal:define-slot="body">Body</span></p>
+</body>
+</html>

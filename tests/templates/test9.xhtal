@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<html>
+<head><title tal:content="title">Title</title></head>
+<body>
+<h1 tal:content="structure ' '.join(title.upper()).replace(' ', '&nbsp;')">Title</h1>
+<ul>
+  <li tal:repeat="item range(3)">Item <span tal:replace="item+1">#</span></li>
+</ul>
+<div tal:content="var">Var</div>
+</body>
+</html>

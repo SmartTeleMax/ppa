@@ -1,0 +1,6 @@
+<html metal:use-macro="'macros4', 'main'">
+<body>
+<div metal:fill-slot="title" tal:replace="title">Title</div>
+<div metal:fill-slot="body" tal:replace="body">Body</div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<html>
+<body>
+<ul metal:define-macro="sections_macro">
+<li tal:repeat="section sections"><span tal:replace="section['title']">Title</span><tal:block tal:define="sections section['children']" tal:condition="sections">
+<ul metal:use-macro="'sections_macro'">
+<li>Chilren sections here</li>
+</ul></tal:block></li>
+</ul>
+</body>
+</html>
