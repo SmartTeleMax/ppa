@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<html><body tal:define="here 'Здесь'">
+<span tal:replace="here">Here</span> должна быть <span tal:replace="cyrillic">Cyrillic</span> <span tal:replace="len(here), len('должна быть'), len(cyrillic)">word lenghts</span>
+</body></html>
