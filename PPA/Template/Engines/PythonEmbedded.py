@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.2 2004/04/09 16:18:46 ods Exp $
+# $Id: PythonEmbedded.py,v 1.3 2004/04/09 16:26:14 ods Exp $
 
 import string, re
 
@@ -111,6 +111,48 @@ class Parser:
         self.cur_pos = pos+2
         return 'html'
 
+def _compile(source, filename, method):
+    """Python built in function compile has some problems (rather person
+    who uses compile() has this problems) with unicode source.
+
+    This function makes compiling unicode source possible.
+
+    NOTE: _compile is depended on undocumented python intepreter features
+    which behavior may change in future. At the moment _compile works well
+    with up to python2.4
+
+    NOTE: _compile is a performance hit, but at the moment i dont know how
+    to deal with situation in other ways."""
+
+    unicodeStringCharset = "utf-8"
+
+    def decode(obj, charset=unicodeStringCharset):
+        if type(obj) is str:
+            try:
+                obj.decode('ascii')
+            except UnicodeError: # UnicodeDecodeError
+                obj = obj.decode(unicodeStringCharset)
+        elif type(obj) is tuple:
+            # python2.4 add tuples to code.co_const, tuples may contain
+            # broken utf-8 strings too, so we have to decode them recursively
+            obj = tuple([decode(i) for i in obj])
+        return obj
+
+    code = compile(source, filename, method)
+    if type(source) is unicode:
+        # when compiling unicode source compile() encodes all const strings
+        # with utf-8. client provided unicode source is supposed to get
+        # all const back as unicode. Following code decodes consts back to
+        # unicode
+        consts = [decode(i) for i in code.co_consts]
+        import new
+        code = new.code(code.co_argcount, code.co_nlocals,
+                        code.co_stacksize, code.co_flags, code.co_code,
+                        tuple(consts), code.co_names, code.co_varnames,
+                        code.co_filename, code.co_name,
+                        code.co_firstlineno, code.co_lnotab)
+    return code
+    
 
 class Compiler:
 
@@ -130,35 +172,9 @@ class Compiler:
         content.append('\n')
         source = ''.join(content)
         try:
-            if type(source) is unicode:
-                code = compile(source.encode('utf-8'), self.filename, 'exec')
-                # XXX This stupid compiler encoded all strings to utf-8, so we
-                # need to convert them to unicode.
-                consts = []
-                for const in code.co_consts:
-                    if type(const) is str:
-                        # We have to leave ascii strings just str not unicode
-                        # because they can be python function keywords or
-                        # something else
-                        try:
-                            const.decode('ascii')
-                        except UnicodeError: # UnicodeDecodeError
-                            consts.append(const.decode('utf-8'))
-                        else:
-                            consts.append(const)
-                    else:
-                        consts.append(const)
-                import new
-                code = new.code(code.co_argcount, code.co_nlocals,
-                                code.co_stacksize, code.co_flags, code.co_code,
-                                tuple(consts), code.co_names, code.co_varnames,
-                                code.co_filename, code.co_name,
-                                code.co_firstlineno, code.co_lnotab)
-            else:
-                code = compile(source, self.filename, 'exec')
+            return _compile(source, self.filename, 'exec')
         except SyntaxError, exc:
             raise CompileError(exc.msg, self.filename, exc.lineno)
-        return code
 
     def process_html(self, s):
         self.write('__PythonEmbedded_write__("""%s""");' % \
