@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# $Id: testCaches.py,v 1.4 2003/11/25 12:08:52 ods Exp $
+# $Id: testCaches.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
-import unittest, sys, os
+import unittest, sys
 
-dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
-sys.path.insert(0, os.path.dirname(os.path.dirname(dir)))
+sys.path.insert(0, '..')
 
 from PPA.Template.Caches import NotCached, DummyCache, MemoryCache
 

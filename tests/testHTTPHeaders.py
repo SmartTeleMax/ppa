@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# $Id: testHTTPHeaders.py,v 1.6 2004/04/09 12:51:18 ods Exp $
+# $Id: testHTTPHeaders.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
-import unittest, sys, os
+import unittest, sys
 
-dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
-sys.path.insert(0, os.path.dirname(os.path.dirname(dir)))
+sys.path.insert(0, '..')
 
 from PPA.HTTP.Base import Headers
 
