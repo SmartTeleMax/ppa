@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# $Id: testTemplate.py,v 1.3 2004/04/12 09:37:14 ods Exp $
+# $Id: testTemplate.py,v 1.4 2004/04/12 09:45:50 ods Exp $
 
 import unittest, sys, os, codecs
 from glob import glob
 from cStringIO import StringIO
 
 dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
-sys.path.insert(0, '..')
+sys.path.insert(0, os.path.dirname(dir))
 
 from PPA.Template.Controller import TemplateController
 from PPA.Template.SourceFinders import FileSourceFinder
