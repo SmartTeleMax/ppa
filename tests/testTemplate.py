@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# $Id: testTemplate.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: testTemplate.py,v 1.2 2004/04/09 15:47:01 ods Exp $
 
 import unittest, sys, os, codecs
 from glob import glob
@@ -129,6 +129,8 @@ _list_of_tests = [
     ('test12', 'pyem',  'utf-8', {'cyrillic': 'кириллица'.decode('utf-8')},
                                  {}),
     ('test13', 'htal',  'utf-8', {'cyrillic': 'кириллица'.decode('utf-8')},
+                                 {}),
+    ('test14', 'xtal',  'utf-8', {'cyrillic': 'кириллица'.decode('utf-8')},
                                  {}),
 ]
 

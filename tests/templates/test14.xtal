@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<document xmlns:tal="http://xml.zope.org/namespaces/tal"
+          tal:define="here 'Здесь'">
+<tal:block tal:replace="here">Here</tal:block> должна быть <tal:block tal:replace="cyrillic">Cyrillic</tal:block> <tal:block tal:replace="len(here), len('должна быть'), len(cyrillic)" />
+</document>
