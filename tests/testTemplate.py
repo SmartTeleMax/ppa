@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# $Id: testTemplate.py,v 1.4 2004/04/12 09:45:50 ods Exp $
+# $Id: testTemplate.py,v 1.5 2004/04/12 10:00:16 ods Exp $
 
 import unittest, sys, os, codecs
 from glob import glob
@@ -134,6 +134,10 @@ _list_of_tests = [
                                  {}),
     ('test15', 'xhtal', 'utf-8', {'cyrillic': 'кириллица'.decode('utf-8')},
                                  {}),
+    # Test for changes in co_consts of compiled object
+    ('test16', 'pyem',  'utf-8', {}, {}),
+    # Test for keyword arguments in unicode mode
+    ('test17', 'pyem',  'utf-8', {}, {}),
 ]
 
 

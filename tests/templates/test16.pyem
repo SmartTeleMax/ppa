@@ -1,0 +1,16 @@
+<html>
+<body>
+<ul>
+<%
+for value in ('строка 1', 'строка 2'):
+    %><li><%= value %><%
+%>
+</ul>
+<ul>
+<%
+for value in ['строка 1', 'строка 2']:
+    %><li><%= value %><%
+%>
+</ul>
+</body>
+</html>
