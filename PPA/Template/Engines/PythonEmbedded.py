@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.3 2004/04/09 16:26:14 ods Exp $
+# $Id: PythonEmbedded.py,v 1.4 2005/03/05 14:13:57 corva Exp $
 
 import string, re
 
@@ -110,49 +110,39 @@ class Parser:
         assert self.string[pos:pos+2]=='%>', [self.string[pos:]]
         self.cur_pos = pos+2
         return 'html'
-
-def _compile(source, filename, method):
-    """Python built in function compile has some problems (rather person
-    who uses compile() has this problems) with unicode source.
-
-    This function makes compiling unicode source possible.
-
-    NOTE: _compile is depended on undocumented python intepreter features
-    which behavior may change in future. At the moment _compile works well
-    with up to python2.4
-
-    NOTE: _compile is a performance hit, but at the moment i dont know how
-    to deal with situation in other ways."""
-
-    unicodeStringCharset = "utf-8"
-
-    def decode(obj, charset=unicodeStringCharset):
-        if type(obj) is str:
-            try:
-                obj.decode('ascii')
-            except UnicodeError: # UnicodeDecodeError
-                obj = obj.decode(unicodeStringCharset)
-        elif type(obj) is tuple:
-            # python2.4 add tuples to code.co_const, tuples may contain
-            # broken utf-8 strings too, so we have to decode them recursively
-            obj = tuple([decode(i) for i in obj])
-        return obj
-
-    code = compile(source, filename, method)
-    if type(source) is unicode:
-        # when compiling unicode source compile() encodes all const strings
-        # with utf-8. client provided unicode source is supposed to get
-        # all const back as unicode. Following code decodes consts back to
-        # unicode
-        consts = [decode(i) for i in code.co_consts]
-        import new
-        code = new.code(code.co_argcount, code.co_nlocals,
-                        code.co_stacksize, code.co_flags, code.co_code,
-                        tuple(consts), code.co_names, code.co_varnames,
-                        code.co_filename, code.co_name,
-                        code.co_firstlineno, code.co_lnotab)
-    return code
     
+
+def compile_unicode(source, filename, method):
+    '''Compile Python source represented as unicode object. All string
+    litterals containing non-ASCII character will be unicode objects.'''
+    import parser, token
+    source = source.encode('utf-8')  # parser complains about unicode source
+    if method=='exec':
+        ast = parser.suite(source)
+    elif method=='eval':
+        ast = parser.expr(source)
+    else:
+        raise ValueError('Unsupported compilation method: %r' % (method,))
+    ast_seq = ast.tolist(True)
+    # non-recursive method to walk through tree
+    stack = [iter([ast_seq]).next]
+    while stack:
+        try:
+            node = stack[-1]()
+        except StopIteration:
+            stack.pop()
+            continue
+        if token.ISNONTERMINAL(node[0]):
+            stack.append(iter(node[1:]).next)
+        elif node[0]==token.STRING:
+            s = eval(node[1])
+            try:
+                s.decode('ascii')
+            except UnicodeDecodeError:
+                s = s.decode('utf-8')
+            node[1] = repr(s)
+    return parser.sequence2ast(ast_seq).compile(filename)
+
 
 class Compiler:
 
@@ -171,6 +161,10 @@ class Compiler:
             getattr(self, 'process_'+state)(s)
         content.append('\n')
         source = ''.join(content)
+        if isinstance(source, unicode):
+            _compile = compile_unicode
+        else:
+            _compile = compile
         try:
             return _compile(source, self.filename, 'exec')
         except SyntaxError, exc:
