@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.5 2005/03/19 12:07:48 ods Exp $
+# $Id: PythonEmbedded.py,v 1.6 2005/03/19 12:19:24 ods Exp $
 
 import string, re
 
@@ -42,15 +42,11 @@ class Parser:
     def process(self):
         self.cur_pos = 0
         self.parts = []
+        self.append = self.parts.append
         state = 'html'
         while state!='EOF':
             state = getattr(self, 'process_'+state)()
         return self.parts
-
-    def append(self, (state, s)):
-        #print '===', state, '==='
-        #print s
-        self.parts.append((state, s))
     
     def report_error(self, message, pos=None):
         if pos is None:
@@ -156,9 +152,6 @@ class Compiler:
         self.content = content = []
         self.write = write = self.content.append
         for state, s in parser.process():
-            if content and content[-1]:
-                if content[-1][-1] not in ' \n\t;':
-                    write('; ')
             getattr(self, 'process_'+state)(s)
         content.append('\n')
         source = ''.join(content)
