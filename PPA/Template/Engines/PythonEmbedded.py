@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.6 2005/03/19 12:19:24 ods Exp $
+# $Id: PythonEmbedded.py,v 1.7 2005/04/11 09:52:25 ods Exp $
 
 import string, re
 
@@ -176,10 +176,13 @@ class Compiler:
 
 
 class Writer:
+    """Wraps fp.write fuction, most file objects accept only string values
+    for write"""
+    
     def __init__(self, fp):
-        self.fp = fp
+        self.write = fp.write
     def __call__(self, object):
-        self.fp.write('%s' % (object,))
+        self.write('%s' % (object,))
 
 
 class Engine:
