@@ -1,4 +1,4 @@
-# $Id: PySI.py,v 1.2 2003/11/25 12:08:52 ods Exp $
+# $Id: PySI.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 '''Python-style string interpolation'''
 
@@ -10,7 +10,6 @@ class EvalDict:
         self.locals = locals
 
     def __getitem__(self, key):
-        key = key % self
         return eval(key, self.globals, self.locals)
 
 
