@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.1 2004/10/12 15:07:36 ods Exp $
+# $Id: Form.py,v 1.2 2004/10/20 15:03:57 ods Exp $
 
 from weakref import WeakKeyDictionary
 from Errors import ClientError
@@ -25,8 +25,11 @@ class Form(object):
         if method in ('GET', 'HEAD'):
             self.parseURLEncodedString(request.query())
         elif method=='POST':
-            content_type = request.headers.get(
-                        'Content-Type', 'application/x-www-form-urlencoded')
+            # XXX Header may contain parameters, parse it.
+            # XXX Add method to Headers class returning value and dictionary of
+            # parameters?
+            content_type = request.headers['Content-Type'] or \
+                                'application/x-www-form-urlencoded'
             try:
                 content_length = int(request.headers['Content-Length'])
             except (KeyError, ValueError):
@@ -39,6 +42,7 @@ class Form(object):
             if content_type=='application/x-www-form-urlencoded':
                 self.parseURLEncoded(request, content_length)
             elif content_type=='multipart/form-data':
+                # XXX Use boundary parameter from header.
                 self.parseMultipart(request, content_length)
     
     def parseURLEncoded(self, request, content_length=None):
