@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.2 2004/10/20 15:03:57 ods Exp $
+# $Id: Form.py,v 1.3 2006/06/08 07:15:58 ods Exp $
 
 from weakref import WeakKeyDictionary
 from Errors import ClientError
@@ -10,6 +10,8 @@ class Form(object):
     maxContentLength = 1048576
     requireContentLength = 1
     keepBlankValues = 0
+    charset = None
+    charsetErrors = 'replace'
     
     __cache = WeakKeyDictionary()
     
@@ -62,3 +64,15 @@ class Form(object):
         for qfn, qfv in pairs:
             if qfv or self.keepBlankValues:
                 setdefault(unquote(qfn), []).append(unquote(qfv))
+
+    def _decode(self, value):
+        if self.charset is not None:
+            return value.decode(self.charset, self.charsetErrors)
+        else:
+            return value
+
+    def getString(self, name, default=''):
+        return self._decode(self._dict.get(name, [default])[0])
+
+    def getStringList(self, name):
+        return [self._decode(value) for value in self._dict.get(name, [])]
