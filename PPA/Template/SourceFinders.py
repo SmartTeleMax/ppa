@@ -1,7 +1,7 @@
-# $Id: SourceFinders.py,v 1.5 2003/11/25 12:08:52 ods Exp $
+# $Id: SourceFinders.py,v 1.1.1.1 2004/04/09 13:18:10 ods Exp $
 
 from glob import glob
-import os
+import os, codecs
 
 
 class TemplateNotFoundError(Exception):
@@ -25,15 +25,30 @@ class DummySourceFinder:
         raise TemplateNotFoundError(template_name, template_type, 'cache')
 
 
+class TemplateDirectory(str):
+    '''Incapsulates directory name and charset of files within it'''
+    
+    def __new__(cls, directory, charset=None):
+        inst = str.__new__(cls, directory)
+        inst.charset = charset
+        return inst
+
+    def getReader(self, file):
+        if self.charset:
+            return codecs.getreader(self.charset)(file)
+        else:
+            return file
+        
+
 # XXX Should the finder know about where to get enginesByType? I guess no. We
 # may replace None with full list of types we can handle. This is much more
 # flexible!
 class FileSourceFinder:
     '''Find source of template by name and type.'''
 
-    def __init__(self, search_dirs, file=file):
+    def __init__(self, search_dirs):
+        """search_dirs is a list of TemplateDirectory instances"""
         self._search_dirs = search_dirs
-        self._file = file
     
     def find(self, template_name, template_type=None):
         from Engines import enginesByType
@@ -45,13 +60,16 @@ class FileSourceFinder:
         for dir in self._search_dirs:
             path = os.path.join(dir, pathern)
             files = glob(path)
-            for file in files:
-                name, ext = os.path.splitext(file)
+            for filename in files:
+                name, ext = os.path.splitext(filename)
                 if os.path.basename(name)==template_basename:
                     ext = ext[1:]
                     # We should check the type to avoid backups at least
                     if enginesByType.has_key(ext):
-                        return self._file(file), ext
+                        assert isinstance(dir, TemplateDirectory), \
+                               "Source dir %r is not an instance of " \
+                               "TemplateDirectory" % dir
+                        return dir.getReader(file(filename)), ext
         else:
             raise TemplateNotFoundError(template_name, template_type,
                                         ', '.join(self._search_dirs))
