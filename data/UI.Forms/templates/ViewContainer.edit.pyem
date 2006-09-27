@@ -1,0 +1,11 @@
+<div id="<%= fieldName %>-container" class="field">
+<div class="fieldTitle"><%= fieldType.title %></div>
+<table width="100%"><tr>
+<td><%
+for subfield_name, subfield_type in fieldType.fieldGroup.subfields:
+    %><%= subfields.get(subfield_name, '') %>
+<%
+%></td>
+<td width="8em" align="right"><button id="<%= fieldName %>-editShow" type="button">Edit</button></td>
+</tr></table>
+</div>

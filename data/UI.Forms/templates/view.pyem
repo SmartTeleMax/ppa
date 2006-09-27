@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="STYLESHEET" type="text/css" href="/static/styles/default.css"><%
+if requisites.get('create_eventapi'):
+    %>
+<script src="/static/scripts/prototype.js"></script>
+<script src="/static/scripts/events.js"></script><%
+%>
+<script><%
+if requisites.get('create_eventapi'):
+    %>
+var eapi = new EventAPI(window.location, {action: 'handleEvent'});<%
+if requisites.get('onload'):
+    %>
+Event.observe(window, 'load', function() {
+<%
+    for i in requisites['onload']:
+        %>  <%= i %><%
+    %>
+})<%
+%>
+</script>
+</head>
+<body>
+
+<div class="view">
+<form id="main" method="POST">
+<%= content %>
+<input type="submit" value="Submit">
+</form>
+</div>
+
+</body>
+</html>

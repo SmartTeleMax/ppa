@@ -1,0 +1,7 @@
+<div id="<%= fieldName %>-container" class="field">
+<div class="fieldTitle"><%= fieldType.title %></div>
+<%
+for item in items:
+    %><%= item %><%
+%>
+</div>

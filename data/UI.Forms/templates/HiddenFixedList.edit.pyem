@@ -1,0 +1,6 @@
+<div id="<%= fieldName %>-container" style="display: none">
+<%
+for item in items:
+    %><%= item %><%
+%>
+</div>

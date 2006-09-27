@@ -1,0 +1,11 @@
+<div id="<%= fieldName %>-container" class="field">
+<div class="fieldTitle"><%= fieldType.title %></div><%
+if errors.has_key(fieldName):
+    %>
+<div class="fieldError"><%= errors[fieldName] %></div><%
+%>
+<table width="100%"><tr>
+<td><input id="<%= fieldName %>-control" type="text" name="<%= fieldName %>" value="<%= content[fieldName] %>" /></td>
+<td width="8em" align="right"><button id="<%= fieldName %>-editAccept" type="button">OK</button></td>
+</tr></table>
+</div>

@@ -1,0 +1,11 @@
+<div id="<%= fieldName %>-container" class="field">
+<div class="fieldTitle"><%= fieldType.title %></div>
+<input type="hidden" name="<%= fieldName %>-length" value="<%= len(items) %>" />
+<table border="1">
+<%
+for index, item in enumerate(items):
+    %><tr><td><%= item %></td><td><button id="<%= fieldName %>-insert-<%= index %>" type="button">Insert</button></td><td><button id="<%= fieldName %>-delete-<%= index %>" type="button">Delete</button></td></tr><%
+%>
+<tr><td><button id="<%= fieldName %>-insert" type="button">Insert</button></td><td></td><td><button id="<%= fieldName %>-delete" type="button">Delete all</button></td></tr>
+</table>
+</div>

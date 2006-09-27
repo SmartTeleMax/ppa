@@ -1,0 +1,7 @@
+<div id="<%= fieldName %>-container" class="fieldGroup">
+<%
+for subfield_name, subfield_type in fieldType.subfields:
+    %><%= subfields.get(subfield_name, '') %>
+<%
+%>
+</div>
