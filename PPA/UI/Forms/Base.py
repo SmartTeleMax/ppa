@@ -338,7 +338,7 @@ class FormEventParser:
     def __init__(self, event_id_field='event'):
         self.eventIdField = event_id_field
 
-    def __call__(self, request, response, form):
+    def __call__(self, form):
         event_id = form.getString(self.eventIdField)
         return Event(event_id, form)
 
@@ -393,7 +393,7 @@ class View:
         template.interpret(fp, self.globalNamespace, local_namespace)
         return fp.getvalue()
 
-    def show(self, request, response, value=None, filter=ACFilter(),
+    def show(self, value=None, filter=ACFilter(),
              params=None):
         if value is None:
             value = self.fieldGroup.getDefault(FieldName(), Context({}),
@@ -402,10 +402,9 @@ class View:
         context = Context(value)
         form_content = self.fieldGroup.toForm(FieldName(), context, filter)
         content = self.render(form_content, {}, context, filter, params)
-        response.setContentType(self.contentType, charset=self.charset)
-        response.write(content)
+        return content
 
-    def accept(self, request, response, form, value=None, filter=ACFilter(),
+    def accept(self, form, value=None, filter=ACFilter(),
                params=None):
         if value is None:
             value = self.fieldGroup.getDefault(FieldName(), Context({}),
@@ -415,19 +414,18 @@ class View:
             self.fieldGroup.accept(form, FieldName(), context, filter, params)
         if errors:
             logging.info('Errors: %r', errors)
-            response.setContentType(self.contentType, charset=self.charset)
             context = Context(new_value)
-            response.write(self.render(form_content, errors, context, filter,
-                                       params))
+            return None, self.render(form_content, errors, context, filter,
+                                     params))
         else:
-            return new_value
+            return new_value, None
 
-    def event(self, request, response, form, value=None, filter=ACFilter(),
+    def event(self, form, value=None, filter=ACFilter(),
               params=None):
         if value is None:
             value = self.fieldGroup.getDefault(FieldName(), Context({}),
                                                params)
-        event = self.parseEvent(request, response, form)
+        event = self.parseEvent(form)
         context = Context(value)
         actions = []
         self.fieldGroup.handleEvent(
@@ -438,5 +436,4 @@ class View:
         fp = Writer()
         local_namespace = {'actions': actions, 'params': params}
         template.interpret(fp, self.globalNamespace, local_namespace)
-        response.setContentType(self.contentType, charset=self.charset)
-        response.write(fp.getvalue())
+        return fp.getvalue()
