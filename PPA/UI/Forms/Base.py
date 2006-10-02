@@ -416,7 +416,7 @@ class View:
             logging.info('Errors: %r', errors)
             context = Context(new_value)
             return None, self.render(form_content, errors, context, filter,
-                                     params))
+                                     params)
         else:
             return new_value, None
 
