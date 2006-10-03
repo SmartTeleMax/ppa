@@ -9,9 +9,10 @@ class Chain(Converter):
         self.chain = args
         Converter.__init__(self, **kwargs)
     
-    def fromForm(self, field_type, value, context, view):
+    def fromForm(self, field_type, value, context, params):
         for converter in self.chain:
-            value, error = converter.fromForm(field_type, value, context, view)
+            value, error = converter.fromForm(field_type, value,
+                                              context, params)
             if error is not None:
                 return None, error
         return value, None
@@ -29,7 +30,7 @@ class Length(Converter):
     max = 255
     error = 'Length error'
     
-    def fromForm(self, field_type, value, context, view):
+    def fromForm(self, field_type, value, context, params):
         if self.min<=len(value)<=self.max:
             return value, None
         else:
@@ -40,7 +41,7 @@ class Pattern(Converter):
     pattern = None
     error = "String doesn't match pattern"
 
-    def fromForm(self, field_type, value, context, view):
+    def fromForm(self, field_type, value, context, params):
         if self.pattern:
             import re
             if not re.match(self.pattern, value):
@@ -64,7 +65,7 @@ class Number(Converter):
             return ''
         return str(value)
 
-    def fromForm(self, field_type, value, context, view):
+    def fromForm(self, field_type, value, context, params):
         if not value and field_type.allowNone:
             return None, None
         try:
@@ -101,5 +102,5 @@ else:
 class StripTags(Converter):
     allowedTags = []
 
-    def fromForm(self, field_type, value, context, view):
+    def fromForm(self, field_type, value, context, params):
         return _strip_tags(value, self.allowedTags), None
