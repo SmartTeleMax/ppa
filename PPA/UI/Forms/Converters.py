@@ -18,7 +18,7 @@ class Chain(Converter):
         return value, None
 
     def toForm(self, field_type, value):
-        for converter in self.chain:
+        for converter in reversed(self.chain):
             value = converter.toForm(field_type, value)
         return value
 
