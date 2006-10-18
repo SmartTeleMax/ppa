@@ -1,8 +1,8 @@
 <div id="<%= fieldName %>-container" class="field">
-<div class="fieldTitle"><%= fieldType.title %></div><%
+<div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div><%
 if errors.has_key(fieldName):
     %>
-<div class="fieldError"><%= errors[fieldName] %></div><%
+<div class="fieldError"><%= quoteHTML(errors[fieldName]) %></div><%
 %>
 <select id="<%= fieldName %>-control" name="<%= fieldName %>">
 <%
@@ -12,11 +12,10 @@ elif fieldType.allowNone:
     %><option value=""></option>
 <%
 for value, title in options:
-    # XXX value is not converted to form!
-    %><option value="<%= value %>"<%
+    %><option value="<%= quoteHTML(value) %>"<%
     if value==content[fieldName]:
         %> selected="selected"<%
-    %>><%= title %></option>
+    %>><%= quoteHTML(title) %></option>
 <%
 %></select>
 </div>

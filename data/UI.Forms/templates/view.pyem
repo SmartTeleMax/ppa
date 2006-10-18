@@ -15,8 +15,8 @@ if requisites.get('onload'):
     %>
 Event.observe(window, 'load', function() {
 <%
-    for i in requisites['onload']:
-        %>  <%= i %><%
+    for action in requisites['onload']:
+        %>  <%= action %><%
     %>
 })<%
 %>

@@ -1,5 +1,5 @@
 <div id="<%= fieldName %>-container" class="field">
-<div class="fieldTitle"><%= fieldType.title %></div>
+<div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div>
 <%
 for subfield_name, subfield_type in fieldType.fieldGroup.subfields:
     %><%= subfields.get(subfield_name, '') %>

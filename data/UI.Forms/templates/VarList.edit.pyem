@@ -1,5 +1,5 @@
 <div id="<%= fieldName %>-container" class="field">
-<div class="fieldTitle"><%= fieldType.title %></div>
+<div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div>
 <input type="hidden" name="<%= fieldName %>-length" value="<%= len(items) %>" />
 <table border="1">
 <%
