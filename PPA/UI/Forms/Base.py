@@ -1,5 +1,6 @@
 from PPA.Template.SourceFinders import TemplateNotFoundError
 import inspect, logging
+from PPA.Utils import CachedClassAttribute
 
 logger = logging.getLogger(__name__)
 
@@ -362,9 +363,17 @@ class EventHandler:
 
 class View:
 
+    def globalNamespace(cls):
+        from PPA.Template import Cook
+        return {'quoteHTML'     : Cook.quoteHTML,
+                'quoteFormField': Cook.quoteFormField,
+                'quoteURLPath'  : Cook.quoteURLPath,
+                'Cook'          : Cook}
+    globalNamespace = CachedClassAttribute(globalNamespace)
+
     def __init__(self, field_group, get_template, template_name='view', 
                  event_template_name='event', parse_event=FormEventParser(),
-                 global_namespace={}, content_type='text/html',
+                 global_namespace=None, content_type='text/html',
                  charset=None):
         self.fieldGroup = field_group
         self.templateName = template_name
@@ -372,7 +381,8 @@ class View:
         self.parseEvent = parse_event
         self.getTemplate = get_template
         self.templateSelector = FieldTemplateSelector(get_template)
-        self.globalNamespace = global_namespace
+        if global_namespace is not None:
+            self.globalNamespace = global_namespace
         self.contentType = content_type
         self.charset = charset
 
