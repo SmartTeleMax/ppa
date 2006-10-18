@@ -1,3 +1,0 @@
-<div id="<%= fieldName %>-container" style="display: none">
-<input id="<%= fieldName %>-control" type="hidden" name="<%= fieldName %>" value="<%= content[fieldName] %>" />
-</div>
