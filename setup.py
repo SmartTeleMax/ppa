@@ -1,8 +1,20 @@
 #!/usr/bin/env python
-# $Id: $
+# $Id: setup.py,v 1.1 2004/04/09 13:44:13 ods Exp $
 
 from distutils.core import setup
-import PPA
+import PPA, os
+
+
+def rglob(where, dir):
+    result = []
+    for root, dirs, files in os.walk(dir):
+        if 'CVS' in dirs:
+            dirs.remove('CVS')
+        files = [os.path.join(root, file) for file in files
+                 if not (file.startswith('.') or file.endswith('~'))]
+        result.append((os.path.join(where, root), files))
+    return result
+
 
 setup(name='PPA',
       version=PPA.__version__,
@@ -26,5 +38,5 @@ setup(name='PPA',
       ],
       download_url='http://prdownloads.sourceforge.net/ppa/'\
                    'PPA-%s.tar.gz?download' % PPA.__version__,
-      packages=['PPA', 'PPA.HTTP', 'PPA.Template', 'PPA.Template.Engines'])
-      
+      packages=['PPA', 'PPA.HTTP', 'PPA.Template', 'PPA.Template.Engines'],
+      data_files=rglob('share/PPA', 'data/UI.Forms'))
