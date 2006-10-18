@@ -1,3 +1,9 @@
+# $Id$
+
+'''Adapter for use in WSGI (Python Web Server Gateway Interface) servers.
+See http://www.python.org/dev/peps/pep-0333/ for more information about WSGI.
+'''
+
 import Base, CGI, logging
 logger = logging.getLogger(__name__)
 
@@ -20,7 +26,7 @@ class WSGIFileObject:
 class Response(CGI.Response):
     def __init__(self, request, start_response, buffered=1):
 	self._start_response = start_response
-	CGI.Response.__init__(self, request, WSGIFileObject(), buffered) # fp is None, all fp method redefined
+	CGI.Response.__init__(self, request, WSGIFileObject(), buffered)
 
     def _write_status(self):
 	# All work is done by _write_headers
