@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.1 2004/04/09 13:44:13 ods Exp $
+# $Id: setup.py,v 1.2 2006/10/18 13:56:00 ods Exp $
 
 from distutils.core import setup
 import PPA, os
@@ -38,5 +38,6 @@ setup(name='PPA',
       ],
       download_url='http://prdownloads.sourceforge.net/ppa/'\
                    'PPA-%s.tar.gz?download' % PPA.__version__,
-      packages=['PPA', 'PPA.HTTP', 'PPA.Template', 'PPA.Template.Engines'],
+      packages=['PPA', 'PPA.Utils', 'PPA.HTTP', 'PPA.Template',
+                'PPA.Template.Engines'],
       data_files=rglob('share/PPA', 'data/UI.Forms'))
