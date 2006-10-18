@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.2 2004/04/12 13:01:29 ods Exp $
+# $Id: Base.py,v 1.3 2004/08/25 14:30:53 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 import logging
@@ -190,6 +190,28 @@ class Response:
 
 
 class Adapter:
+    """Base adapter for all protocol adapters in PPA.HTTP. Implementation
+    of this adapter provide same interface for all supported web-protocols.
+
+    General usage is:
+    
+    You subclass protocol's Adapter and define method 'handle' which will be
+    called by adapter on every http request. Method handle accepts two params:
+    request (instance of Request class) and response (instance
+    of Response class).
+
+    Then you instantiate the adapter, and use adapter instance in protocol
+    enviroment (described in protocol implementation modules)
+
+    Example:
+
+    class MyAdapter(Adapter):
+        def handle(self, request, response):
+            # do http request processing here
+            pass
+
+    adapter = Adapter()
+    """
 
     def __call__(self, request, response):
         from Errors import EndOfRequest, InternalServerError
