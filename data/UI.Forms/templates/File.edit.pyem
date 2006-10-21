@@ -1,0 +1,18 @@
+<%
+field_to_focus = fieldType.allowUpload and 'upload' or 'url'
+%><div id="<%= fieldName %>-container" class="field">
+<div class="fieldTitle"><label for="<%= fieldName %>-<%= field_to_focus %>"><%= quoteHTML(fieldType.title) %></label></div>
+<div class="fieldContent"><%
+if errors.has_key(fieldName):
+    %>
+<div class="fieldError"><%= quoteHTML(errors[fieldName]) %></div><%
+file = content[fieldName]
+if file and file.url:
+    %><div class="File.filename"><%= file.name() %></div><%
+if fieldType.allowUpload:
+    %><div class="File-upload"><input type="file" name="<%= fieldName %>-upload" id="<%= fieldName %>-upload" value=""></div><%
+if fieldType.allowFetch:
+    %><div class="File-url"><input type="file" name="<%= fieldName %>-url" id="<%= fieldName %>-url" value="<%= content[fieldName+'-url'] %>" class="inputTextLarge"></div><%
+%>
+</div>
+</div>
