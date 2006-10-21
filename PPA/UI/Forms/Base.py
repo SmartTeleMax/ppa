@@ -365,10 +365,19 @@ class View:
 
     def globalNamespace(cls):
         from PPA.Template import Cook
-        return {'quoteHTML'     : Cook.quoteHTML,
-                'quoteFormField': Cook.quoteFormField,
-                'quoteURLPath'  : Cook.quoteURLPath,
-                'Cook'          : Cook}
+        return {'quoteHTML'          : Cook.quoteHTML,
+                'quoteFormField'     : Cook.quoteFormField,
+                'quoteURLPath'       : Cook.quoteURLPath,
+                'Cook'               : Cook,
+                # <form action="">
+                'form_enctype'       : 'multipart/form-data',
+                # <input type="submit" value="">
+                'form_action'        : None,
+                # <input type="submit" value="">
+                'form_submit_value'  : None,
+                # list of (name, value) for
+                # <input type="hidden" name="" value="">
+                'form_hiddens'       : []}
     globalNamespace = CachedClassAttribute(globalNamespace)
 
     def __init__(self, field_group, get_template, template_name='view', 
@@ -382,7 +391,7 @@ class View:
         self.getTemplate = get_template
         self.templateSelector = FieldTemplateSelector(get_template)
         if global_namespace is not None:
-            self.globalNamespace = global_namespace
+            self.globalNamespace.update(global_namespace)
         self.contentType = content_type
         self.charset = charset
 

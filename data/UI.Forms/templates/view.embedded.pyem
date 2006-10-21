@@ -3,10 +3,6 @@ form_action = globals().get('form_action')
 submit_value = globals().get('form_submit_value')
 hidden_fields = globals().get('form_hiddens', [])
 form_enctype = globals().get('form_enctype')
-%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<link rel="STYLESHEET" type="text/css" href="/static/styles/default.css"><%
 if requisites.get('create_eventapi'):
     %>
 <script src="/static/scripts/prototype.js"></script>
@@ -26,8 +22,6 @@ Event.observe(window, 'load', function() {
 })<%
 %>
 </script>
-</head>
-<body>
 
 <div class="view">
 <form id="main"<%
@@ -48,6 +42,3 @@ if submit_value:
 </div>
 </form>
 </div>
-
-</body>
-</html>
