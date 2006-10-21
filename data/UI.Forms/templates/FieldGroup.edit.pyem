@@ -1,4 +1,6 @@
-<div id="<%= fieldName %>-container" class="fieldGroup">
+<div id="<%= fieldName %>-container" class="fieldGroup"><%
+if getattr(fieldType, 'title', None):
+    %><div class="fieldGroupTitle"><%= fieldType.title %></div>
 <%
 for subfield_name, subfield_type in fieldType.subfields:
     %><%= subfields.get(subfield_name, '') %>

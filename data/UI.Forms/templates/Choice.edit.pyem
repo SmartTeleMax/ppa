@@ -1,5 +1,6 @@
 <div id="<%= fieldName %>-container" class="field">
-<div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div><%
+<div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div>
+<div class="fieldContent"><%
 if errors.has_key(fieldName):
     %>
 <div class="fieldError"><%= quoteHTML(errors[fieldName]) %></div><%
@@ -18,4 +19,5 @@ for value, title in options:
     %>><%= quoteHTML(title) %></option>
 <%
 %></select>
+</div>
 </div>

@@ -1,4 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%
+form_action = globals().get('form_action')
+submit_value = globals().get('submit_value')
+%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <link rel="STYLESHEET" type="text/css" href="/static/styles/default.css"><%
@@ -25,9 +28,17 @@ Event.observe(window, 'load', function() {
 <body>
 
 <div class="view">
-<form id="main" method="POST">
+<form id="main"<%
+if form_action:
+    %> action="<%= form_action %>"<%
+%> method="POST">
 <%= content %>
-<input type="submit" value="Submit">
+<div class="actions">
+<input type="submit"<%
+if submit_value:
+    %> value="<%= submit_value %>"<%
+%>>
+</div>
 </form>
 </div>
 

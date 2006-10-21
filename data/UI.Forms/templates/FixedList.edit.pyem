@@ -1,7 +1,9 @@
 <div id="<%= fieldName %>-container" class="field">
 <div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div>
+<div class="fieldContent">
 <%
 for item in items:
     %><%= item %><%
 %>
+</div>
 </div>

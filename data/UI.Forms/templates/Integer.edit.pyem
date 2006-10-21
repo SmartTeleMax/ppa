@@ -1,9 +1,11 @@
 <div id="<%= fieldName %>-container" class="field">
 <div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div>
+<div class="fieldContent">
 <%
 if errors.has_key(fieldName):
     %>
 <div class="fieldError"><%= quoteHTML(errors[fieldName]) %></div><%
 %>
 <input id="<%= fieldName %>-control" type="text" name="<%= fieldName %>" value="<%= quoteHTML(content[fieldName]) %>" />
+</div>
 </div>

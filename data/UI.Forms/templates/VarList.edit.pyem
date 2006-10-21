@@ -1,5 +1,6 @@
 <div id="<%= fieldName %>-container" class="field">
 <div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div>
+<div class="fieldContent">
 <input type="hidden" name="<%= fieldName %>-length" value="<%= len(items) %>" />
 <table border="1">
 <%
@@ -8,4 +9,5 @@ for index, item in enumerate(items):
 %>
 <tr><td><button id="<%= fieldName %>-insert" type="button">Insert</button></td><td></td><td><button id="<%= fieldName %>-delete" type="button">Delete all</button></td></tr>
 </table>
+</div>
 </div>
