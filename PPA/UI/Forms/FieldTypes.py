@@ -74,6 +74,8 @@ class Choice(ScalarField):
 
 
 class MultipleChoice(Choice): # this shouldn't be, MultipleChoice is no Scalar
+    default = []
+
     def fetch(self, form, field_name, context, params):
         return {field_name.inForm: form.getlist(field_name.inForm)}
     

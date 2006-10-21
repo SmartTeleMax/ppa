@@ -1,0 +1,15 @@
+<div id="<%= fieldName %>-container" class="field">
+<div class="fieldTitle"><%= quoteHTML(fieldType.title) %></div><%
+if errors.has_key(fieldName):
+    %>
+<div class="fieldError"><%= quoteHTML(errors[fieldName]) %></div><%
+%>
+<%
+for value, title in options:
+    %><input type="checkbox" id="<%= fieldName %>-<%= quoteHTML(value) %>" name="<%= fieldName %>" value="<%= quoteHTML(value) %>"<%
+    if value in content[fieldName]:
+        %> checked="checked"<%
+    %>><label for="<%= fieldName %>-<%= quoteHTML(value) %>"><%= quoteHTML(title) %></label>
+<%
+%>
+</div>
