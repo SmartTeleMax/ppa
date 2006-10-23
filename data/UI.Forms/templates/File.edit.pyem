@@ -8,11 +8,11 @@ if errors.has_key(fieldName):
 <div class="fieldError"><%= quoteHTML(errors[fieldName]) %></div><%
 file = content[fieldName]
 if file and file.url:
-    %><div class="File.filename"><%= file.name() %></div><%
+    %><div class="File.filename"><%= quoteHTML(file.name()) %></div><%
 if fieldType.allowUpload:
     %><div class="File-upload"><input type="file" name="<%= fieldName %>-upload" id="<%= fieldName %>-upload" value=""></div><%
 if fieldType.allowFetch:
-    %><div class="File-url"><input type="file" name="<%= fieldName %>-url" id="<%= fieldName %>-url" value="<%= content[fieldName+'-url'] %>" class="inputTextLarge"></div><%
+    %><div class="File-url"><input type="file" name="<%= fieldName %>-url" id="<%= fieldName %>-url" value="<%= quoteHTML(content[fieldName+'-url']) %>" class="inputTextLarge"></div><%
 %>
 </div>
 </div>
