@@ -1,4 +1,4 @@
-# $Id: SourceFinders.py,v 1.1.1.1 2004/04/09 13:18:10 ods Exp $
+# $Id: SourceFinders.py,v 1.2 2006/06/19 09:19:47 corva Exp $
 
 from glob import glob
 import os, codecs
@@ -40,18 +40,22 @@ class TemplateDirectory(str):
             return file
         
 
-# XXX Should the finder know about where to get enginesByType? I guess no. We
-# may replace None with full list of types we can handle. This is much more
-# flexible!
 class FileSourceFinder:
     '''Find source of template by name and type.'''
 
-    def __init__(self, search_dirs):
-        """search_dirs is a list of TemplateDirectory instances"""
-        self._search_dirs = search_dirs
+    def __init__(self, search_dirs, engines_by_type=None):
+        """search_dirs is a list of TemplateDirectory instances,
+        engines_by_type is an optional mapping of engine types to modules."""
+        self._search_dirs = []
+        for dir in search_dirs:
+            if not isinstance(dir, TemplateDirectory):
+                dir = TemplateDirectory(dir)
+            self._search_dirs.append(dir)
+        if engines_by_type is None:
+            from Engines import enginesByType as engines_by_type
+        self._engines_by_type = engines_by_type
     
     def find(self, template_name, template_type=None):
-        from Engines import enginesByType
         if template_type is None:
             pathern = template_name+'.*'
         else:
@@ -65,7 +69,7 @@ class FileSourceFinder:
                 if os.path.basename(name)==template_basename:
                     ext = ext[1:]
                     # We should check the type to avoid backups at least
-                    if enginesByType.has_key(ext):
+                    if self._engines_by_type.has_key(ext):
                         assert isinstance(dir, TemplateDirectory), \
                                "Source dir %r is not an instance of " \
                                "TemplateDirectory" % dir
