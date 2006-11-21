@@ -1,4 +1,4 @@
-# $Id: CGI.py,v 1.21 2003/11/25 12:08:51 ods Exp $
+# $Id: CGI.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 import Base
 

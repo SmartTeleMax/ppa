@@ -1,7 +1,10 @@
-# $Id: Base.py,v 1.4 2006/10/18 12:38:56 corva Exp $
+# $Id: Base.py,v 1.5 2006/10/18 13:39:33 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
+
 import logging
+from PPA.HTTP import Errors
+
 logger = logging.getLogger(__name__)
 
 class Headers:
@@ -101,7 +104,7 @@ class Request:
 
 class Response:
 
-    from Errors import statusCodes
+    statusCodes = Errors.statusCodes
     charset = 'ascii'
     charsetErrors = 'replace'
     charsetErrorsByType = {
@@ -214,14 +217,12 @@ class Adapter:
             self.handle = handle
 
     def handle(self, request, response):
-        import Errors
         raise Errors.NotFound()
 
     def __call__(self, request, response):
-        from Errors import EndOfRequest, InternalServerError
         try:
             self.handle(request, response)
-        except EndOfRequest, exc:
+        except Errors.EndOfRequest, exc:
             exc.handle(request, response)
         except SystemExit:
             pass
@@ -231,7 +232,7 @@ class Adapter:
         except:
             # unhandled error
             logger.exception('Unhandled exception for %s', request.uri())
-            InternalServerError().handle(request, response)
+            Errors.InternalServerError().handle(request, response)
 
         try:
             response.close()
