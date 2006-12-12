@@ -1,4 +1,4 @@
-# $Id: SourceFinders.py,v 1.2 2006/06/19 09:19:47 corva Exp $
+# $Id: SourceFinders.py,v 1.3 2006/10/24 07:17:41 ods Exp $
 
 from glob import glob
 import os, codecs
@@ -18,13 +18,6 @@ class TemplateNotFoundError(Exception):
         return msg
 
 
-class DummySourceFinder:
-    '''Usefull when we need only ready to use templates in cache'''
-
-    def find(self, template_name, template_type=None):
-        raise TemplateNotFoundError(template_name, template_type, 'cache')
-
-
 class TemplateDirectory(str):
     '''Incapsulates directory name and charset of files within it'''
     
@@ -40,8 +33,49 @@ class TemplateDirectory(str):
             return file
         
 
-class FileSourceFinder:
-    '''Find source of template by name and type.'''
+class SourceFinder:
+    """Template finder. Usage is:
+
+    finder = SomeSourceFinder()
+    fp, template_type = finder.find("templatename")
+    fp, template_type = finder.find("templatename", "pyem")
+    """
+    
+    def find(self, template_name, template_type=None):
+        """Returns tuple (fp, template_type), where fp is file object
+        of template body"""
+        raise NotImplementedError()
+
+
+class DummySourceFinder(SourceFinder):
+    '''Usefull when we need only ready to use templates in cache'''
+
+    def find(self, template_name, template_type=None):
+        raise TemplateNotFoundError(template_name, template_type, 'cache')
+
+
+class StringSourceFinder(SourceFinder):
+    """Dummy template finder, is initialized with template source, any
+    find call returns source like it was found.
+
+    finder = StringSourceFinder(template_source)
+    """
+    
+    def __init__(self, template_data):
+        self._template_data = template_data
+    
+    def find(self, template_name, template_type):
+        from StringIO import StringIO
+        return StringIO(self._template_data), template_type
+
+    
+class FileSourceFinder(SourceFinder):
+    '''Find source of template by name and type in filesystem directory.
+    Must be initialized with list of filesystem directories where to find
+    templates.
+
+    finder = FileSourceFinder(["template_dir1", "template_dir2"])
+    '''
 
     def __init__(self, search_dirs, engines_by_type=None):
         """search_dirs is a list of TemplateDirectory instances,
@@ -77,3 +111,4 @@ class FileSourceFinder:
         else:
             raise TemplateNotFoundError(template_name, template_type,
                                         ', '.join(self._search_dirs))
+
