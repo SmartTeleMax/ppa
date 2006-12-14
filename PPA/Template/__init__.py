@@ -36,90 +36,29 @@ import Controller, SourceFinders
 from Caches import MemoryCache
 from Engines import EngineImporter
 
-__all__ = ['FileTemplateGetter', 'StringTemplateGetter']
+__all__ = ['fromString', 'fromFile']
 
 
-class _Writer:
-    """Fast, but incompatible StringIO.StringIO implementation. Only supports
-    write and getvalue methods"""
-    
-    def __init__(self):
-	self.parts = []
-	self.write = self.parts.append
-    
-    def getvalue(self):
-	return ''.join(self.parts)
+_controller = None
 
+def fromString(source, template_type, encoding=None, template_name='?',
+               controller=None):
+    global _controller
+    if controller is None:
+        if _controller is None:
+            _controller = Controller.TemplateController()
+        controller = _controller
+    return controller.compileString(source, template_type, template_name)
 
-class TemplateWrapper(Controller.TemplateWrapper):
+def fromFile(source_fp, template_type, encoding=None, template_name='?',
+               controller=None):
+    global _controller
+    if controller is None:
+        if _controller is None:
+            _controller = Controller.TemplateController()
+        controller = _controller
+    return controller.compileFile(source_fp, template_type, template_name)
 
-    def __call__(self, namespace={}, **kwargs):
-        fp = _Writer()
-        self.interpret(fp, namespace, kwargs)
-        return fp.getvalue()
-
-
-class TemplateGetter:
-    """Base template getter class, is not used directly.
-
-    Common usage is:
-
-    getter = TemplateGeatter()
-    template = getter('template_name')
-    """
-
-    def __init__(self, source_finder, cache=MemoryCache()):
-	self.controller = Controller.TemplateController(
-            source_finder,
-            template_wrapper_class=TemplateWrapper,
-            template_cache=cache)
-
-    def __call__(self, template_name, template_type=None):
-        return self.controller.getTemplate(template_name, template_type)
-
-	
-class FileTemplateGetter(TemplateGetter):
-    """Gets template from filesystem. Is initialized with list of
-    filesystem directories where templates are searched.
-
-    Usage:
-
-    getter = FileTemplateGetter(['dir1', 'dir2'])
-    template = getter('template_name')
-    """
-
-    def __init__(self, dirs, *args, **kwargs):
-	source_finder = SourceFinders.FileSourceFinder(dirs)
-	TemplateGetter.__init__(self, source_finder, *args, **kwargs)
-
-
-class StringTemplateGetter(TemplateGetter):
-    """Is initialized with template body, and returns it as template.
-
-    Usage:
-
-    getter = StringTemplateGetter(template_source)
-    template = getter('template_name', 'template_type')
-
-    Param template_type is mandatory for StringTemplateGetter.__call__()
-    """
-
-    def __init__(self, template_source, *args, **kwargs):
-	source_finder = SourceFinders.StringSourceFinder(template_source)
-	TemplateGetter.__init__(self, source_finder, *args, **kwargs)
-
-    def __call__(self, template_name, template_type):
-        """template_type is mandatory for StringTemplateGetter.__call__"""
-        return TemplateGetter.__call__(self, template_name, template_type)
-
-
-if __name__ == '__main__':
-    getter = FileTemplateGetter(['/tmp'])
-    template = getter('templatename')
-    data = template(name='test')
-    print data
-    
-    getter = StringTemplateGetter('name is <%= name %>')
-    template = getter('sometemplate', 'pyem')
-    print template(name='test')
-    
+def filesControllerXXXBetterName(dirs, **kwargs):
+    source_finder = SourceFinders.FileSourceFinder(dirs)
+    return Controller.TemplateController(source_finder, **kwargs)
