@@ -1,44 +1,48 @@
-# $Id$
+# $Id: __init__.py,v 1.4 2006/12/14 14:40:08 ods Exp $
 
 """PPA.Template - templating support in PPA.
 
 This package defines a set of classes to find, interpret and evaluate templates
 in various templating languages.
 
+PPA.Template provides:
+
+fromString              - compiles template passed as string
+fromFile                - compiles template from file-like object
+TemplateController      - controller for all template operation, use it if you
+                          need more control
+FileSourceFinder        - finds templates by name from series of directories
+TemplateNotFoundError   - exception, raise when template not found
+
 You may look deeper in code to use all provided classes directly, but more
 common usage is like this:
 
-# PPA.Template namespace provides two classes:
-# FileTemplateGetter - finds template in filesystem directories
-# StringTemplateGetter - is initialized with template body and uses it as onerous template
+from PPA import Template
 
-from PPA.Template import *
+Simple usage:
 
-# Example usage of FileTemplateGetter:
+    template = Template.fromString('<h1><%= title %></h1>', 'pyem')
+    result = template.toString({'title': 'Python rulez!'})
+    
+    import codecs
+    fp = open('template.pyem', 'rb')
+    template = Template.fromFile(fp, 'pyem')
+    result = template.toFile(sys.stdout, {'title': 'Python rulez!'})
 
-# initialize FileTemplateGetter to find templates in files on filesystem
-getter = FileTemplateGetter(
-    ['/home/project/templates', '/var/common_templates'])
-# ask getter to find template by name
-template = getter('site_index_page')
-# render template, namespace is given as keyword arguments
-rendered_data = template(site_title='My site')
+More complex example:
 
-# Example usage of StringTemplateGetter:
-
-# initialize StringTemplateGetter with template source
-getter = StringTemplateGetter('My name is <%= name %>')
-# NOTE: second param, template_type is required by StringTemplateGetter
-template = getter('dummy template name', 'pyem')
-rendered_data = template(name='Variable')
+    source_finder = Template.FileSourceFinder(['/path/to/tamplates1',
+                                               '/path/to/tamplates2'])
+    controller = Template.TemplateController(source_finder)
+    # The following method automatically determines the type of template
+    template = controller.getTemplate('template')
+    template.toFile(sys.stdout, global_ns, local_ns)
 """
 
-import sys
-import Controller, SourceFinders
-from Caches import MemoryCache
-from Engines import EngineImporter
+from Controller import TemplateController
+from SourceFinders import TemplateNotFoundError, FileSourceFinder
 
-__all__ = ['fromString', 'fromFile']
+__all__ = ['TemplateNotFoundError', 'TemplateController', 'FileSourceFinder']
 
 
 _controller = None
@@ -49,7 +53,7 @@ def fromString(source, template_type, template_name='?', controller=None):
     global _controller
     if controller is None:
         if _controller is None:
-            _controller = Controller.TemplateController()
+            _controller = TemplateController()
         controller = _controller
     return controller.compileString(source, template_type, template_name)
 
@@ -59,10 +63,6 @@ def fromFile(source_fp, template_type, template_name='?', controller=None):
     global _controller
     if controller is None:
         if _controller is None:
-            _controller = Controller.TemplateController()
+            _controller = TemplateController()
         controller = _controller
     return controller.compileFile(source_fp, template_type, template_name)
-
-def filesControllerXXXBetterName(dirs, **kwargs):
-    source_finder = SourceFinders.FileSourceFinder(dirs)
-    return Controller.TemplateController(source_finder, **kwargs)
