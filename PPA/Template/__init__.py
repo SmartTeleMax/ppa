@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.4 2006/12/14 14:40:08 ods Exp $
+# $Id: __init__.py,v 1.5 2006/12/14 15:54:28 ods Exp $
 
 """PPA.Template - templating support in PPA.
 
@@ -24,10 +24,9 @@ Simple usage:
     template = Template.fromString('<h1><%= title %></h1>', 'pyem')
     result = template.toString({'title': 'Python rulez!'})
     
-    import codecs
     fp = open('template.pyem', 'rb')
     template = Template.fromFile(fp, 'pyem')
-    result = template.toFile(sys.stdout, {'title': 'Python rulez!'})
+    template.toFile(sys.stdout, {'title': 'Python rulez!'})
 
 More complex example:
 
@@ -42,7 +41,8 @@ More complex example:
 from Controller import TemplateController
 from SourceFinders import TemplateNotFoundError, FileSourceFinder
 
-__all__ = ['TemplateNotFoundError', 'TemplateController', 'FileSourceFinder']
+__all__ = ['TemplateNotFoundError', 'TemplateController', 'FileSourceFinder',
+           'fromString', 'fromFile']
 
 
 _controller = None
