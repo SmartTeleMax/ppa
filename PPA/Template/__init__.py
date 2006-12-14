@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.6 2006/12/14 16:25:29 corva Exp $
+# $Id: __init__.py,v 1.7 2006/12/14 16:32:24 ods Exp $
 
 """PPA.Template - templating support in PPA.
 
@@ -40,8 +40,7 @@ More complex example:
 from Controller import TemplateController
 from SourceFinders import TemplateNotFoundError, FileSourceFinder
 
-__all__ = ['TemplateNotFoundError', 'TemplateController', 'FileSourceFinder',
-           'fromString', 'fromFile']
+__all__ = ['TemplateNotFoundError', 'TemplateController', 'FileSourceFinder']
 
 
 _controller = None
