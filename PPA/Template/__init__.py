@@ -1,7 +1,9 @@
+# $Id$
+
 """PPA.Template - templating support in PPA.
 
 This package defines a set of classes to find, interpret and evaluate templates
-in varuois templating languages.
+in various templating languages.
 
 You may look deeper in code to use all provided classes directly, but more
 common usage is like this:
@@ -41,8 +43,9 @@ __all__ = ['fromString', 'fromFile']
 
 _controller = None
 
-def fromString(source, template_type, encoding=None, template_name='?',
-               controller=None):
+def fromString(source, template_type, template_name='?', controller=None):
+    '''Compiles template passed as string (str or unicode) and returns
+    TemplateWrapper instance.'''
     global _controller
     if controller is None:
         if _controller is None:
@@ -50,8 +53,9 @@ def fromString(source, template_type, encoding=None, template_name='?',
         controller = _controller
     return controller.compileString(source, template_type, template_name)
 
-def fromFile(source_fp, template_type, encoding=None, template_name='?',
-               controller=None):
+def fromFile(source_fp, template_type, template_name='?', controller=None):
+    '''Compiles template from file-like object and returns TemplateWrapper
+    instance.'''
     global _controller
     if controller is None:
         if _controller is None:
