@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.5 2006/12/14 15:54:28 ods Exp $
+# $Id: __init__.py,v 1.6 2006/12/14 16:25:29 corva Exp $
 
 """PPA.Template - templating support in PPA.
 
@@ -24,8 +24,7 @@ Simple usage:
     template = Template.fromString('<h1><%= title %></h1>', 'pyem')
     result = template.toString({'title': 'Python rulez!'})
     
-    fp = open('template.pyem', 'rb')
-    template = Template.fromFile(fp, 'pyem')
+    template = Template.fromFile('template.pyem', 'pyem')
     template.toFile(sys.stdout, {'title': 'Python rulez!'})
 
 More complex example:
@@ -57,12 +56,19 @@ def fromString(source, template_type, template_name='?', controller=None):
         controller = _controller
     return controller.compileString(source, template_type, template_name)
 
-def fromFile(source_fp, template_type, template_name='?', controller=None):
-    '''Compiles template from file-like object and returns TemplateWrapper
-    instance.'''
+def fromFile(source_file, template_type, template_name=None, controller=None):
+    '''Compiles template from path or file-like object and returns
+    TemplateWrapper instance.'''
     global _controller
+    close = False
+    if not hasattr(source_file, 'read'):
+        source_file = open(source_file, 'rb')
+        close = True
     if controller is None:
         if _controller is None:
             _controller = TemplateController()
         controller = _controller
-    return controller.compileFile(source_fp, template_type, template_name)
+    result = controller.compileFile(source_file, template_type, template_name)
+    if close:
+        source_file.close()
+    return result
