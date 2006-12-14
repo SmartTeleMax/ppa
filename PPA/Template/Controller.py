@@ -1,4 +1,4 @@
-# $Id: Controller.py,v 1.1.1.1 2004/04/09 13:18:10 ods Exp $
+# $Id: Controller.py,v 1.2 2006/12/14 13:42:48 ods Exp $
 
 import sys
 from Caches import NotCached, DummyCache
@@ -6,10 +6,24 @@ from Caches import NotCached, DummyCache
 
 TEMPLATE_RECURSION_LIMIT = 10
 
+class _Writer:
+    """Fast, but incompatible StringIO.StringIO implementation. Only supports
+    write and getvalue methods"""
+    # XXX This class is fast, but trade-off is dificulty in discovering of
+    # UnicodeError source: in case of mixed str/unicode chunks we get an error
+    # only when getvalue() is called, while it should be raised in write() to
+    # get proper traceback.
+    
+    def __init__(self):
+	self.parts = []
+	self.write = self.parts.append
+    
+    def getvalue(self):
+	return ''.join(self.parts)
 
-# XXX Problem with this class and related code: it breaks incapsulation. On the
-# other hand serialization always breaks incapsulation.
+
 class TemplateWrapper:
+    '''Wraps template in handy object.'''
 
     def __init__(self, engine, program, compile_deps,
                  create_interpret_dep_reg):
@@ -24,15 +38,6 @@ class TemplateWrapper:
     def interpret(self, fp=sys.stdout, globals={}, locals={},
                   _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         # _recursion_limit is for internal use only
-        #
-        # XXX Comments below are a bit outdated
-        # This method can be overwritten to change vars and add callback
-        # methods that need to know about fp etc.  E.g. access to another
-        # template:
-        #     # using nested scopes
-        #     def template(vars=vars.copy()):
-        #         other_template = self._controller.getTemplate()
-        #         other_template.interpret(fp, vars)
         interpret_dep_reg = self._create_interpret_dep_reg(_recursion_limit-1)
         try:
             self._engine.interpret(self._program, fp, globals, locals,
@@ -41,6 +46,16 @@ class TemplateWrapper:
             raise TemplateRecursionLimitExceeded(
                     [(template_name, template_type)]+exc.stack)
         return interpret_dep_reg.getDependencies()
+
+    def toFile(self, fp, globals={}, locals={}):
+        '''Renders template into file-like object.'''
+        self.interpret(fp, globals, locals)
+
+    def toString(self, globals={}, locals={}):
+        '''Renders template and returns result as string.'''
+        fp = _Writer()
+        self.toFile(fp, globals, locals)
+        return fp.getvalue()
 
 
 class TemplateDependencyRegistrar:
