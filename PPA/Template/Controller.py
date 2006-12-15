@@ -1,4 +1,4 @@
-# $Id: Controller.py,v 1.3 2006/12/14 15:01:53 ods Exp $
+# $Id: Controller.py,v 1.4 2006/12/15 11:09:22 ods Exp $
 
 import sys
 from Caches import NotCached, DummyCache
@@ -135,12 +135,14 @@ class TemplateController:
                       _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         engine = self.getEngine(template_type)
         return self._compile(engine, engine.compileString, source,
+                             template_name=template_name,
                              _recursion_limit=_recursion_limit)
 
     def compileFile(self, source_fp, template_type, template_name='?',
                     _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         engine = self.getEngine(template_type)
         return self._compile(engine, engine.compileFile, source_fp,
+                             template_name=template_name,
                              _recursion_limit=_recursion_limit)
 
     def getTemplate(self, template_name, template_type=None,
@@ -158,6 +160,7 @@ class TemplateController:
             source_fp, real_template_type = \
                 self._source_finder.find(template_name, template_type)
             template = self.compileFile(source_fp, real_template_type,
+                                        template_name=template_name,
                                         _recursion_limit=_recursion_limit)
             self._template_cache.store((template_name, real_template_type),
                                        template)
