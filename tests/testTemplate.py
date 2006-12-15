@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# $Id: testTemplate.py,v 1.5 2004/04/12 10:00:16 ods Exp $
+# $Id: testTemplate.py,v 1.6 2005/03/19 09:53:59 ods Exp $
 
 import unittest, sys, os, codecs
 from glob import glob
@@ -10,7 +10,7 @@ dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
 sys.path.insert(0, os.path.dirname(dir))
 
 from PPA.Template.Controller import TemplateController
-from PPA.Template.SourceFinders import FileSourceFinder
+from PPA.Template.SourceFinders import FileSourceFinder, TemplateDirectory
 
 
 class TemplateTestCase(unittest.TestCase):
@@ -20,20 +20,18 @@ class TemplateTestCase(unittest.TestCase):
         unittest.TestCase.__init__(self)
         self.template_name = template_name
         self.template_type = template_type
-        if charset is None:
-            self.reader = file
-            self.writer = StringIO
-        else:
-            self.reader = lambda fn: codecs.getreader(charset)(file(fn))
-            self.writer = lambda: codecs.getwriter(charset)(StringIO())
+        writer = StringIO
+        if charset is not None:
+            templates_path = TemplateDirectory(templates_path, charset)
+            writer = lambda: codecs.getwriter(charset)(StringIO())
+        self.writer = writer
         self.globals = globals
         self.locals = locals
         self.templates_path = templates_path
         self.results_path = results_path
     
     def runTest(self):
-        source_finder = FileSourceFinder([self.templates_path],
-                                         file=self.reader)
+        source_finder = FileSourceFinder([self.templates_path])
         controller = TemplateController(source_finder=source_finder)
         template = controller.getTemplate(self.template_name,
                                           self.template_type)
