@@ -2,7 +2,7 @@
 <head><title>%(title)s</title></head>
 <body>
 <h1>%(title)s</h1>
-%('\n'.join(['<p>%%s</p>' %% para for para in body[:%(max_paras)d]]))s
+%('\n'.join(['<p>%s</p>' % para for para in body[:max_paras]]))s
 <div>%(var)s</div>
 </body>
 </html>
