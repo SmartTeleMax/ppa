@@ -1,10 +1,11 @@
-# $Id: Controller.py,v 1.2 2006/12/14 13:42:48 ods Exp $
+# $Id: Controller.py,v 1.3 2006/12/14 15:01:53 ods Exp $
 
 import sys
 from Caches import NotCached, DummyCache
 
 
 TEMPLATE_RECURSION_LIMIT = 10
+
 
 class _Writer:
     """Fast, but incompatible StringIO.StringIO implementation. Only supports
@@ -64,17 +65,16 @@ class TemplateDependencyRegistrar:
     def __init__(self, get_template, _recursion_limit):
         self._get_template = get_template
         self._recursion_limit = _recursion_limit
-        self._dependencies = {}
+        self._dependencies = set()
 
     def getTemplate(self, template_name, template_type=None):
         template = self._get_template(template_name, template_type,
                                       self._recursion_limit)
-        self._dependencies[template_name, template.type] = 1
-        # XXX self._dependencies.extend(...)
+        self._dependencies.add((template_name, template.type))
         return template
 
     def getDependencies(self):
-        return self._dependencies.keys()
+        return self._dependencies
 
 
 class TemplateRecursionLimitExceeded(Exception):
@@ -86,7 +86,6 @@ class TemplateRecursionLimitExceeded(Exception):
         return ' -> '.join(map(repr, self.stack))
 
 
-# XXX The only public method of TemplateController is getTemplate?
 class TemplateController:
     '''Control communication between application, template engines, cache,
     template source finder.'''
