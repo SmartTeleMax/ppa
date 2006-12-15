@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-# $Id: testSourceFinders.py,v 1.2 2004/04/09 15:48:36 ods Exp $
+# $Id: testSourceFinders.py,v 1.3 2004/04/12 10:00:16 ods Exp $
 
 import unittest, sys, os
 
 dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
 sys.path.insert(0, os.path.dirname(dir))
+
+from PPA.Template.SourceFinders import TemplateDirectory
+
 
 class FileSourceFinderTest(unittest.TestCase):
 
@@ -17,10 +20,9 @@ class FileSourceFinderTest(unittest.TestCase):
                 res.append(pattern.replace('*', repl))
             return res
 
-    class _HackedFile:
-        def __init__(self, file, mode='r'):
-            self.file = file
-            self.mode = mode
+    class _HackedTemplateDirectory(TemplateDirectory):
+        def getReader(self, file_name):
+            return file_name
 
     def testFind(self):
         '''FileSourceFinder.find()'''
@@ -35,14 +37,12 @@ class FileSourceFinderTest(unittest.TestCase):
         SourceFinders.glob = self._HackedGlob(type)
         import __builtin__
         # test
-        sf = SourceFinders.FileSourceFinder(['/dir'], self._HackedFile)
-        self.assertEqual(sf.find('test')[0].file,
-                         '/dir/test.'+type)
-        self.assertEqual(sf.find('test1.test2')[0].file,
-                         '/dir/test1.test2.'+type)
-        self.assertEqual(sf.find('test1/test2')[0].file,
-                         '/dir/test1/test2.'+type)
-        self.assertEqual(sf.find('test1/test2.test3')[0].file,
+        sf = SourceFinders.FileSourceFinder(
+                                [self._HackedTemplateDirectory('/dir')])
+        self.assertEqual(sf.find('test')[0], '/dir/test.'+type)
+        self.assertEqual(sf.find('test1.test2')[0], '/dir/test1.test2.'+type)
+        self.assertEqual(sf.find('test1/test2')[0], '/dir/test1/test2.'+type)
+        self.assertEqual(sf.find('test1/test2.test3')[0],
                          '/dir/test1/test2.test3.'+type)
         # Restore environment
         SourceFinders.glob =  real_glob
