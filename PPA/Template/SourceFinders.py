@@ -1,4 +1,4 @@
-# $Id: SourceFinders.py,v 1.4 2006/12/12 17:10:55 corva Exp $
+# $Id: SourceFinders.py,v 1.5 2006/12/14 13:38:50 ods Exp $
 
 from glob import glob
 import os, codecs
@@ -26,11 +26,12 @@ class TemplateDirectory(str):
         inst.charset = charset
         return inst
 
-    def getReader(self, file):
+    def getReader(self, file_name):
+        fp = open(file_name, 'rb')
         if self.charset:
-            return codecs.getreader(self.charset)(file)
+            return codecs.getreader(self.charset)(fp)
         else:
-            return file
+            return fp
         
 
 class SourceFinder:
@@ -82,17 +83,16 @@ class FileSourceFinder(SourceFinder):
         template_basename = os.path.basename(template_name)
         for dir in self._search_dirs:
             path = os.path.join(dir, pathern)
-            files = glob(path)
-            for filename in files:
-                name, ext = os.path.splitext(filename)
+            for file_name in glob(path):
+                name, ext = os.path.splitext(file_name)
                 if os.path.basename(name)==template_basename:
-                    ext = ext[1:]
+                    template_type = ext[1:]
                     # We should check the type to avoid backups at least
-                    if self._engines_by_type.has_key(ext):
+                    if self._engines_by_type.has_key(template_type):
                         assert isinstance(dir, TemplateDirectory), \
                                "Source dir %r is not an instance of " \
                                "TemplateDirectory" % dir
-                        return dir.getReader(file(filename)), ext
+                        return dir.getReader(file_name), template_type
         else:
             raise TemplateNotFoundError(template_name, template_type,
                                         ', '.join(self._search_dirs))
