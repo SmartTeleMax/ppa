@@ -1,6 +1,6 @@
-# $Id: Controller.py,v 1.4 2006/12/15 11:09:22 ods Exp $
+# $Id: Controller.py,v 1.5 2006/12/15 11:25:00 ods Exp $
 
-import sys
+import sys, os
 from Caches import NotCached, DummyCache
 
 
@@ -26,10 +26,11 @@ class _Writer:
 class TemplateWrapper:
     '''Wraps template in handy object.'''
 
-    def __init__(self, engine, program, compile_deps,
+    def __init__(self, name, type, engine, program, compile_deps,
                  create_interpret_dep_reg):
+        self.name = name
+        self.type = type
         self._engine = engine
-        self.type = engine.type
         self._program = program
         self._create_interpret_dep_reg = create_interpret_dep_reg
 
@@ -45,7 +46,7 @@ class TemplateWrapper:
                                    interpret_dep_reg.getTemplate)
         except TemplateRecursionLimitExceeded, exc:
             raise TemplateRecursionLimitExceeded(
-                    [(template_name, template_type)]+exc.stack)
+                            [(self.name, self.type)]+exc.stack)
         return interpret_dep_reg.getDependencies()
 
     def toFile(self, fp, globals={}, locals={}):
@@ -67,10 +68,9 @@ class TemplateDependencyRegistrar:
         self._recursion_limit = _recursion_limit
         self._dependencies = set()
 
-    def getTemplate(self, template_name, template_type=None):
-        template = self._get_template(template_name, template_type,
-                                      self._recursion_limit)
-        self._dependencies.add((template_name, template.type))
+    def getTemplate(self, name, type=None):
+        template = self._get_template(name, type, self._recursion_limit)
+        self._dependencies.add((name, template.type))
         return template
 
     def getDependencies(self):
@@ -80,7 +80,7 @@ class TemplateDependencyRegistrar:
 class TemplateRecursionLimitExceeded(Exception):
 
     def __init__(self, stack):
-        self.stack = stack  # Stack of (template_name, template_type) pairs
+        self.stack = stack  # Stack of (name, type) pairs
 
     def __str__(self):
         return ' -> '.join(map(repr, self.stack))
@@ -114,54 +114,63 @@ class TemplateController:
         return self._interpret_dep_reg_class(self.getTemplate,
                                              _recursion_limit)
 
-    def _compile(self, engine, compile, source, template_name='?',
+    def _compile(self, engine, compile, source, name, type,
                  _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         # creating registrar for compile dependencies
         compile_dep_reg = self._compile_dep_reg_class(self.getTemplate,
                                                 _recursion_limit-1)
         try:
-            program = compile(source, template_name,
-                              compile_dep_reg.getTemplate)
+            program = compile(source, name, compile_dep_reg.getTemplate)
         except TemplateRecursionLimitExceeded, exc:
-            raise TemplateRecursionLimitExceeded(
-                    [(template_name, template_type)]+exc.stack)
+            raise TemplateRecursionLimitExceeded([(name, type)]+exc.stack)
         # now compile_dep_reg already catched all compile dependencies
         compile_deps = compile_dep_reg.getDependencies()
 
-        return self._template_wrapper_class(engine, program, compile_deps,
+        return self._template_wrapper_class(name, type, engine, program,
+                                            compile_deps,
                                             self._create_interpret_dep_reg)
 
-    def compileString(self, source, template_type, template_name='?',
+    def typeFromName(self, name):
+        ext = os.path.splitext(name)[1]
+        if not ext:
+            raise ValueError("Can't determine template type automatically. "\
+                             'You have to state it explicitly.')
+        assert ext[0]=='.'
+        return ext[1:]
+
+    def compileString(self, source, name='?', type=None,
                       _recursion_limit=TEMPLATE_RECURSION_LIMIT):
-        engine = self.getEngine(template_type)
-        return self._compile(engine, engine.compileString, source,
-                             template_name=template_name,
+        if type is None:
+            type = self.typeFromName(name)
+        engine = self.getEngine(type)
+        return self._compile(engine, engine.compileString, source, name, type,
                              _recursion_limit=_recursion_limit)
 
-    def compileFile(self, source_fp, template_type, template_name='?',
+    def compileFile(self, source_fp, name=None, type=None,
                     _recursion_limit=TEMPLATE_RECURSION_LIMIT):
-        engine = self.getEngine(template_type)
-        return self._compile(engine, engine.compileFile, source_fp,
-                             template_name=template_name,
+        if name is None:
+            name = getattr(source_fp, 'name', '?')
+        if type is None:
+            type = self.typeFromName(name)
+        engine = self.getEngine(type)
+        return self._compile(engine, engine.compileFile, source_fp, name, type,
                              _recursion_limit=_recursion_limit)
 
-    def getTemplate(self, template_name, template_type=None,
+    def getTemplate(self, name, type=None,
                     _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         # _recursion_limit is for internal use only
         '''Dispatch the request to template engine and return compiled
         template object.'''
         if _recursion_limit==0:
-            raise TemplateRecursionLimitExceeded(
-                    [(template_name, template_type)])
+            raise TemplateRecursionLimitExceeded([(name, type)])
         try:
-            template = self._template_cache.retrieve(
-                        (template_name, template_type))
+            template = self._template_cache.retrieve((name, type))
         except NotCached:
-            source_fp, real_template_type = \
-                self._source_finder.find(template_name, template_type)
-            template = self.compileFile(source_fp, real_template_type,
-                                        template_name=template_name,
+            source_fp, real_type = \
+                self._source_finder.find(name, type)
+            template = self.compileFile(source_fp, name, real_type,
                                         _recursion_limit=_recursion_limit)
-            self._template_cache.store((template_name, real_template_type),
-                                       template)
+            self._template_cache.store((name, real_type), template)
+            if type!=real_type:
+                self._template_cache.store((name, type), template)
         return template

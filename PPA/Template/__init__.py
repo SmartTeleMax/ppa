@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.7 2006/12/14 16:32:24 ods Exp $
+# $Id: __init__.py,v 1.8 2006/12/14 16:33:42 ods Exp $
 
 """PPA.Template - templating support in PPA.
 
@@ -21,10 +21,10 @@ from PPA import Template
 
 Simple usage:
 
-    template = Template.fromString('<h1><%= title %></h1>', 'pyem')
+    template = Template.fromString('<h1><%= title %></h1>', type='pyem')
     result = template.toString({'title': 'Python rulez!'})
     
-    template = Template.fromFile('template.pyem', 'pyem')
+    template = Template.fromFile('template.pyem')
     template.toFile(sys.stdout, {'title': 'Python rulez!'})
 
 More complex example:
@@ -45,7 +45,7 @@ __all__ = ['TemplateNotFoundError', 'TemplateController', 'FileSourceFinder']
 
 _controller = None
 
-def fromString(source, template_type, template_name='?', controller=None):
+def fromString(source, name='?', type=None, controller=None):
     '''Compiles template passed as string (str or unicode) and returns
     TemplateWrapper instance.'''
     global _controller
@@ -53,9 +53,9 @@ def fromString(source, template_type, template_name='?', controller=None):
         if _controller is None:
             _controller = TemplateController()
         controller = _controller
-    return controller.compileString(source, template_type, template_name)
+    return controller.compileString(source, name, type)
 
-def fromFile(source_file, template_type, template_name=None, controller=None):
+def fromFile(source_file, name=None, type=None, controller=None):
     '''Compiles template from path or file-like object and returns
     TemplateWrapper instance.'''
     global _controller
@@ -63,11 +63,13 @@ def fromFile(source_file, template_type, template_name=None, controller=None):
     if not hasattr(source_file, 'read'):
         source_file = open(source_file, 'rb')
         close = True
-    if controller is None:
-        if _controller is None:
-            _controller = TemplateController()
-        controller = _controller
-    result = controller.compileFile(source_file, template_type, template_name)
-    if close:
-        source_file.close()
+    try:
+        if controller is None:
+            if _controller is None:
+                _controller = TemplateController()
+            controller = _controller
+        result = controller.compileFile(source_file, name, type)
+    finally:
+        if close:
+            source_file.close()
     return result
