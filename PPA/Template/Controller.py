@@ -1,4 +1,4 @@
-# $Id: Controller.py,v 1.5 2006/12/15 11:25:00 ods Exp $
+# $Id: Controller.py,v 1.6 2006/12/19 09:39:27 ods Exp $
 
 import sys, os
 from Caches import NotCached, DummyCache
@@ -37,23 +37,24 @@ class TemplateWrapper:
     def getProgram(self):
         return self._program
 
-    def interpret(self, fp=sys.stdout, globals={}, locals={},
+    def interpret(self, fp=sys.stdout, globals=None, locals=None,
                   _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         # _recursion_limit is for internal use only
         interpret_dep_reg = self._create_interpret_dep_reg(_recursion_limit-1)
         try:
-            self._engine.interpret(self._program, fp, globals, locals,
+            self._engine.interpret(self._program, fp,
+                                   globals or {}, locals or {},
                                    interpret_dep_reg.getTemplate)
         except TemplateRecursionLimitExceeded, exc:
             raise TemplateRecursionLimitExceeded(
                             [(self.name, self.type)]+exc.stack)
         return interpret_dep_reg.getDependencies()
 
-    def toFile(self, fp, globals={}, locals={}):
+    def toFile(self, fp, globals=None, locals=None):
         '''Renders template into file-like object.'''
         self.interpret(fp, globals, locals)
 
-    def toString(self, globals={}, locals={}):
+    def toString(self, globals=None, locals=None):
         '''Renders template and returns result as string.'''
         fp = _Writer()
         self.toFile(fp, globals, locals)
