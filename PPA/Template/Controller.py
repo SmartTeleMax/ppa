@@ -1,7 +1,7 @@
-# $Id: Controller.py,v 1.6 2006/12/19 09:39:27 ods Exp $
+# $Id: Controller.py,v 1.7 2006/12/21 15:55:41 corva Exp $
 
 import sys, os
-from Caches import NotCached, DummyCache
+from Caches import NotCached, MemoryCache
 
 
 TEMPLATE_RECURSION_LIMIT = 10
@@ -104,7 +104,7 @@ class TemplateController:
             engine_importer = EngineImporter()
         self.getEngine = engine_importer
         if template_cache is None:
-            template_cache = DummyCache()
+            template_cache = MemoryCache()
         self._template_cache = template_cache
         self._engine_cache = {}
         self._template_wrapper_class = template_wrapper_class
