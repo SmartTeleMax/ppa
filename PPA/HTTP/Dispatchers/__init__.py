@@ -31,8 +31,8 @@ Location /forums is dispatched to callable object 'app' in module 'forum'.
 Location /wiki is dispatched to method 'run' of object 'app' in module 'wiki'
 """
 
+from PPA.HTTP import Errors
 
-import PPA.HTTP.Errors
 
 def importObject(name, default_module=None, globals=None):
     '''Import object with name in form package.module.obj_name'''
