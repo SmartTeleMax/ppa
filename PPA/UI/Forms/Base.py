@@ -412,8 +412,7 @@ class View:
         template.interpret(fp, self.globalNamespace, local_namespace)
         return fp.getvalue()
 
-    def show(self, value=None, filter=ACFilter(),
-             params=None):
+    def show(self, value=None, filter=ACFilter(), params=None):
         if value is None:
             value = self.fieldGroup.getDefault(FieldName(), Context({}),
                                                params)
@@ -423,8 +422,7 @@ class View:
         content = self.render(form_content, {}, context, filter, params)
         return content
 
-    def accept(self, form, value=None, filter=ACFilter(),
-               params=None):
+    def accept(self, form, value=None, filter=ACFilter(), params=None):
         if value is None:
             value = self.fieldGroup.getDefault(FieldName(), Context({}),
                                                params)
@@ -439,8 +437,7 @@ class View:
         else:
             return new_value, None
 
-    def event(self, form, value=None, filter=ACFilter(),
-              params=None):
+    def event(self, form, value=None, filter=ACFilter(), params=None):
         if value is None:
             value = self.fieldGroup.getDefault(FieldName(), Context({}),
                                                params)
