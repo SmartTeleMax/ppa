@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.5 2006/10/18 13:39:33 ods Exp $
+# $Id: Base.py,v 1.1 2006/11/21 17:09:44 corva Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 
@@ -101,6 +101,15 @@ class Request:
         else:
             return 'http'
 
+    def getCookie(self, name):
+        from Cookie import SimpleCookie
+        try:
+            cookies = SimpleCookie(self.headers['Cookie'])
+        except KeyError:
+            return
+        if name in cookies:
+            return cookies[name].value
+
 
 class Response:
 
@@ -190,6 +199,26 @@ class Response:
         else:
             self.charsetErrors = errors
         self.headers['Content-Type'] = header
+
+    def setCookie(self, name, value, expires=None, path=None, domain=None,
+                  max_age=None):
+        from Cookie import SimpleCookie
+        cookie[name] = value
+        morsel = cookie[name]
+        if expires or path:
+            if expires is not None:
+                morsel['expires'] = expires
+            if path is not None:
+                morsel['path'] = path
+            if domain is not None:
+                morsel['domain'] = domain
+            if max_age is not None:
+                morsel['max-age'] = max_age
+        header, value = morsel.output().split(': ')
+        self..headers.add(header, value)
+
+    def expireCookie(self, name, path=None, domain=None):
+        self.setCookie(name, '', expires=None, path, domain, max_age=0)
 
 
 class Adapter:
