@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.4 2006/06/09 10:16:26 ods Exp $
+# $Id: Form.py,v 1.5 2007/03/23 11:25:58 ods Exp $
 
 import sys, re
 from weakref import WeakKeyDictionary
@@ -52,11 +52,11 @@ class Form(object):
         value = self.getfirst(key)
         if value is None:
             return default
-        return self.decode(value)
+        return self._decode(value)
 
     def getStringList(self, key):
         '''Like getlist, returning unicode objects'''
-        return [self.decode(item) for item in self.getlist(key)]
+        return [self._decode(item) for item in self.getlist(key)]
 
     def __getattr__(self, name):
         return getattr(self._field_storage, name)
