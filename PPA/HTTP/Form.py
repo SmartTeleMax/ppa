@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.5 2007/03/23 11:25:58 ods Exp $
+# $Id: Form.py,v 1.6 2007/03/23 11:31:04 ods Exp $
 
 import sys, re
 from weakref import WeakKeyDictionary
@@ -42,6 +42,7 @@ class Form(object):
             replacement = ''
         self._replacement = replacement
         self._field_storage = field_storage
+        return self
 
     def _decode(self, value):
         return subNonChar(self._replacement,
