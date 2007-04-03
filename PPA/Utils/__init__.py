@@ -1,6 +1,12 @@
-# $Id$
+# $Id: __init__.py,v 1.1 2006/06/30 13:51:59 ods Exp $
 
 '''General utils'''
+
+__all__ = []
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CachedAttribute(object):
