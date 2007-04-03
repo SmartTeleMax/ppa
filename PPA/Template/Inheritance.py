@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Inheritance.py,v 1.1 2007/04/03 13:41:32 ods Exp $
 
 """PPA.Template.Inheritance - uses class names in MRO to find suitable template
 """
@@ -9,7 +9,7 @@ import inspect
 
 class InheritanceTemplateSelector(object):
     
-    def __init__(self, get_template, template_name=None):
+    def __init__(self, get_template):
         self._get_template = get_template
         self._cache = {}
 
