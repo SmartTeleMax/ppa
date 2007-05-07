@@ -1,229 +1,101 @@
-from FieldTypes import *
-from PPA.Utils import interpolateString
-import logging
-logger = logging.getLogger(__name__)
 
+"""
+PPA Forms package.
 
-class QPSItemConverter(Converter):
+Usage:
 
-    def getStream(self, field_type, context, view):
-        stream_id = interpolateString(field_type.streamTemplate,
-                                      {'context': context})
-        return view.site.retrieveStream(stream_id)
+1. Importing
 
-    def fromForm(self, field_type, value, context, view):
-        if not value and field_type.allowNone:
-            return None, None
-        stream = self.getStream(field_type, context, view)
-        try:
-            item_id = stream.fields.id.convertFromString(value, None)
-            item = stream.retrieveItem(item_id)
-        except Exception, exc:
-            return None, str(exc)
-        return item, None
+from PPA.UI.Forms import Form, Converters, Fields
 
-    def toForm(self, field_type, value):
-        if value is None:
-            return ''
-        return value.fields.id.convertToString(value.id, value)
-        
+2. Defining fields
 
-class QPSItemReference(ScalarField):
-    
-    allowNone = True
-    default = None
-    streamTemplate = None
-    converter = QPSItemConverter()
+PPA.UI.Forms provides a number of prepared, preconfigured fields, all of them
+are located in Fields module. To use field class - create an instance of it,
+providing params as keyword arguments.
 
+Any field may accept 'default' argument, it's field's default value, but it's
+not ness. to provide it any time.
 
-class QPSStreamOptions:
+There are also a so-called ScalarFields, if field is represented in form by
+ONE html control (like <input type='text'> of <textarea>) it is ScalarField.
 
-    def getStream(self, field_type, context, view):
-        stream_id = interpolateString(field_type.streamTemplate,
-                                      {'context': context})
-        return view.site.retrieveStream(stream_id)
+ScalarFields may accept converter as 'converter' keyword argument. Converters
+are defined in Converters module.
 
-    def __call__(self, field_type, context, view):
-        for dependency in field_type.dependencies:
-            if context[dependency] is None:
-                return
-        stream = self.getStream(field_type, context, view)
-        for item in stream:
-            title = interpolateString(field_type.labelTemplate,
-                                      {'item': item})
-            yield item, title
+Example:
 
+    string_field = String(default='Enter your name here')
+    integer_field = Integer(default=100) # every field has defa
+    email_field = String(converter=Converters.Email)
 
-class QPSItemChoice(Choice):
+3. Defining a schema.
 
-    allowNone = True
-    default = None
-    dependencies = []
-    streamTemplate = None
-    labelTemplate = '%(getattr(item, "title", item.id))s'
-    converter = QPSItemConverter()
-    optionsRetriever = QPSStreamOptions()
+Fields collection is called a schema, is't represented by Fields.Schema class.
+To define a schema create an instance of Fields.Schema, providing a keyword
+argument 'subfields', a list of tuples of ('field_name', field_instance):
 
+    user_schema = Fields.Schema(subfields=[
+        ('name', Fields.String(title=u'Name', converter=Converters.NotNull)),
+        ('email', Fields.String(title=u'E-mail', converter=Converters.Email)),
+        ('passwd', Fields.Password(title=u'Password', converter=Converters.NotNull)),
+        ])
 
-class QPSItemMultipleChoice(MultipleChoice):
+3. Using Form object.
 
-    allowNone = True
-    default = None
-    dependencies = []
-    streamTemplate = None
-    labelTemplate = '%(getattr(item, "title", item.id))s'
-    converter = QPSItemConverter()
-    optionsRetriever = QPSStreamOptions()
+Form is a statefull form representation.
 
+3.1. Form instantiation:
 
-class EditShowEventHandler(RenderEventHandler):
+Form requires a fields specification, provided as Fields.Schema instance,
+or just a list of subfields (as provided to Schema):
 
-    def __init__(self):
-        pass
+    form = Form(schema)
 
-    def __call__(self, field_type, field_name, event, context, filter, actions,
-                 params, template_selector, global_namespace):
-        logger.debug('%r ?= %r', event.id, field_name.inForm+'-editShow')
-        if event.id!=field_name.inForm+'-editShow':
-            return
-        actions.extend(RenderEventHandler.actions(
-                                self, field_type.editSpec, field_name, event,
-                                context, filter, params,
-                                template_selector, global_namespace))
+You may want to pass a default values to form:
 
+    form = Form(schema, values=dict(email='Enter your email here'))
 
-class EditAcceptEventHandler(AcceptEventHandler, RenderEventHandler):
+Or give some special application-specific data to be accessable in fields,
+like a db-connector:
 
-    suffix = 'editAccept'
+    form = Form(schema, params=dict(session=sqlalchemy.create_session(db)))
 
-    def __init__(self):
-        pass
+To render an empty form, use a render() emthod, in only accepts template_controller argument (an instance of PPA.Template.TemplateController). template_controller is used to find fields templates.
 
-    def store(self, field_name, context, params):
-        # XXX Redefine to use callback from params
-        logger.info('EditAcceptEventHandler.store(%r, Context(%r, ...), %r)',
-                    field_name, context.value, params)
+The result of render is dict of two keys, 'content' - rendered form html and 'requisited' (not documented yet).
 
-    def __call__(self, field_type, field_name, event, context, filter, actions,
-                 params, template_selector, global_namespace):
-        if event.id!=field_name.inForm+'-'+self.suffix:
-            return
-        actions.extend(AcceptEventHandler.actions(
-                                self, field_type.editSpec, field_name, event,
-                                context, filter, params,
-                                template_selector, global_namespace))
-        self.store(field_name, context, params)
-        actions.extend(RenderEventHandler.actions(
-                                self, field_type, field_name, event,
-                                context, filter, params,
-                                template_selector, global_namespace))
+    rendered_form = form.render(template_controller)
 
+To accept and convert values use accept(), the only argument is PPA.HTTP.Form.Form instance:
 
-class ViewEditSwitchEventGenerator(EventGenerator):
+    form.accept(field_storage)
 
-    action = 'click'
-    nodeIdTmpl = '%(field_name)s-%(suffix)s'
-    eventNameTmpl = '%(field_name)s-%(suffix)s'
-    onloadTmpl = """Event.observe('%(node_id)s', '%(field_action)s', function () {%(eapi)s.sendEvent('%(event_name)s', %(values)s)});"""
-    deps = []
+After form is accepted you may use it next ways:
 
-    def __init__(self, suffix, dependencies=[]):
-        self.suffix = suffix
-        self.deps = dependencies
+if form.hasErrors():
+    errors = form.errors # dict of errors, keys are field names
+else:
+    accepted_values = form.value # dict of converted values, keys are field names, values are python objects returted by fields.
 
-    def __call__(self, field_type, field_name, form_content, errors,
-                 requisites, context, filter, params):
-        r = requisites
-        r['create_eventapi'] = True
-        onload = r.setdefault('onload', [])
-        params = {'suffix': self.suffix,
-                  'field_name': field_name.inForm,
-                  'field_action': self.action,
-                  'values': self._sendEventValues(field_name.inForm),
-                  'eapi': self.eapiName}
-        params['node_id'] = interpolateString(self.nodeIdTmpl, params)
-        params['event_name'] = interpolateString(self.eventNameTmpl, params)
-        onload.append(interpolateString(self.onloadTmpl, params))
+4. Field templates.
 
+template_controller, given to render() is used to find templates for fields.
+MRO is used to resolve template names. For example, if we have:
 
-class MaskAcceptEventHandler(AcceptEventHandler):
+class Field: pass
+class ScalarField: pass
+class String(ScalarField): pass
+class Email(String): pass
 
-    def __init__(self, mask):
-        import re
-        self._match = re.compile(mask).match
+and Email instance tries to render template, templates are being searched using template controller in the next order:
 
-    def __call__(self, field_type, field_name, event, context, filter, actions,
-                 params, template_selector, global_namespace):
-        if self._match(event.id):
-            actions.extend(self.actions(field_type, field_name, event,
-                                        context, filter, params,
-                                        template_selector, global_namespace))
+'Email', 'String', 'ScalarField', 'Fields'
 
+Refer to fields docstrings to determine template's namespaces.
 
-class ItemToVarListEventHandler(AcceptEventHandler, RenderEventHandler):
+Thats all.
+"""
 
-    def __init__(self, suffix, paramName):
-        self.suffix = suffix
-        self.paramName = paramName
-
-    def actions(self, field_type, field_name, event, context, filter, params,
-                template_selector, global_namespace):
-        raise RuntimeError
-
-    def __call__(self, field_type, field_name, event, context, filter, actions,
-                 params, template_selector, global_namespace):
-        if event.id.startswith(field_name.inForm+'-'+self.suffix):
-            AcceptEventHandler.actions(self, field_type, field_name, event,
-                                       context, filter, params,
-                                       template_selector, global_namespace)
-            try:
-                index = int(event.form.getString(
-                                            field_name.inForm+'-index', ''))
-            except ValueError:
-                import traceback
-                logger.error(traceback.format_exc())
-                return
-            else:
-                try:
-                    #del context.value[field_name][index]
-                    callback = params[self.paramName]
-                    new_actions = callback(field_name, index, context)
-                    if new_actions:
-                        actions.extend(new_actions)
-                except IndexError:
-                    return
-            actions.extend(RenderEventHandler.actions(
-                                        self, field_type, field_name, event,
-                                        context, filter, params,
-                                        template_selector, global_namespace))
-
-
-class ItemToVarListEventGenerator(EventGenerator):
-
-    action = 'click'
-    onloadTmpl = """Event.observe('%(node_id)s', '%(field_action)s', function () {%(eapi)s.sendEvent('%(event_name)s', %(values)s)});"""
-
-    def __init__(self, suffix, dependencies=()):
-        self.suffix = suffix
-        self.deps = dependencies
-
-    def __call__(self, field_type, field_name, form_content, errors,
-                 requisites, context, filter, params):
-        r = requisites
-        r['create_eventapi'] = True
-
-        onload = r.setdefault('onload', [])
-        length = form_content[field_type.lengthFieldName(field_name).inForm]
-        for index in xrange(length):
-            onload.append(
-                interpolateString(
-                    self.onloadTmpl,
-                    {'node_id': field_name.inForm+'-%s-%s' % 
-                                                        (self.suffix, index),
-                     'event_name': field_name.inForm+'-%s' % self.suffix,
-                     'field_name': field_name.inForm,
-                     'field_action': self.action,
-                     'values': '["%s-index=%s", ' % (field_name.inForm, index) + self._sendEventValues(field_name.inForm)[1:],
-                     'eapi': self.eapiName})
-                )
-        logger.info(onload)
+from Form import Form
+import Converters, Fields, Layout

@@ -1,15 +1,41 @@
 
-from Base import Converter
+class Converter:
 
+    """Base Converter class, all children must implement
+    fromForm and toForm methods"""
 
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+
+    def fromForm(self, state, context, field_type, value):
+        """Returns value, None if convertation was successful, or None, error
+        if there was error"""
+        
+        return value, None
+
+    def toForm(self, field_type, value):
+        """Returns value converted for form"""
+        
+        return value
+
+    
 class Chain(Converter):
+    """Chain converter, accepts converters as arguments and chains thru them.
+
+    Example:
+
+    Chain(NotNull(), String())
+
+    fromForm chains in direct order,
+    toForm in reverse order"""
+    
     chain = []
 
     def __init__(self, *args, **kwargs):
         self.chain = args
         Converter.__init__(self, **kwargs)
     
-    def fromForm(self, field_type, value, context, params):
+    def fromForm(self, state, context, field_type, value):
         for converter in self.chain:
             value, error = converter.fromForm(field_type, value,
                                               context, params)
@@ -25,31 +51,90 @@ class Chain(Converter):
 
 
 class Length(Converter):
+    """Controls length on string. Params are:
+
+    min - minimal required length (default 0)
+    max - maximal required length (default 255)
+    error - message to raise on length mismatch"""
 
     min = 0
     max = 255
     error = 'Length error'
     
-    def fromForm(self, field_type, value, context, params):
+    def fromForm(self, state, context, field_type, value):
         if self.min<=len(value)<=self.max:
             return value, None
         else:
             return None, self.error
 
 
+class NotNull(Converter):
+    """Controls if bool(value) is True. Params are:
+
+    error - message to raise if value is false"""
+
+    error = 'This field cant be empty'
+    
+    def fromForm(self, state, context, field_type, value):
+        if value:
+            return value, None
+        else:
+            return None, self.error
+
+
+class Strip(Converter):
+    """Returns stripped string, no errors are raised"""
+    
+    def fromForm(self, state, context, field_type, value):
+        return value.strip(), None
+
+
 class Pattern(Converter):
+    """Checks string against a given pattern.
+
+    pattern - regexp pattern used to check a string
+    error - error raised if string doesn't match pattern"""
+    
     pattern = None
     error = "String doesn't match pattern"
 
-    def fromForm(self, field_type, value, context, params):
+    def fromForm(self, state, context, field_type, value):
         if self.pattern:
             import re
             if not re.match(self.pattern, value):
                 return None, self.error
         return value, None
 
+#mandatoryEmailPattern = "^.+\@.+$"
+#emailPattern = "(%s)|(^$)" % mandatoryEmailPattern
+#urlPattern = '(^(http|ftp)://[a-zA-Z0-9\.\?&%=/_;+-]*$|^$)|(^$)'
+#mandatoryUrlPattern = '^(http|ftp)://[a-zA-Z0-9\.\?&%=/_;+-]*$'
+
+
+class Email(Pattern):
+    """Subclass of Pattern, checks if string is a valid email address"""
+    
+    pattern = "^.+\@.+$"
+    error = "This is not email"
+
+
+class Url(Pattern):
+    """Subclass of Pattern, checks if string is a valid url address"""
+
+    pattern = '^(http|ftp)://[a-zA-Z0-9\.\?&%=/_;+-]*$'
+    error = "This is not url"
+
 
 class Number(Converter):
+
+    """Converts string into numeric python type. Params are:
+
+    type - python type (int for example)
+    minValue - minimal border of converted value
+    maxValue - maximum border of converted value
+    rangeError - error raised if value is not in a given range.
+
+    If ValueError (while type(value)) occures - it's raised"""
 
     type = None
     minValue = None
@@ -65,7 +150,7 @@ class Number(Converter):
             return ''
         return str(value)
 
-    def fromForm(self, field_type, value, context, params):
+    def fromForm(self, state, context, field_type, value):
         if not value and field_type.allowNone:
             return None, None
         try:
@@ -102,5 +187,5 @@ else:
 class StripTags(Converter):
     allowedTags = []
 
-    def fromForm(self, field_type, value, context, params):
+    def fromForm(self, state, context, field_type, value):
         return _strip_tags(value, self.allowedTags), None
