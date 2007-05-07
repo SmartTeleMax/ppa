@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.2 2007/03/23 11:52:39 ods Exp $
+# $Id: Base.py,v 1.3 2007/03/26 07:33:40 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 
@@ -257,9 +257,6 @@ class Adapter:
             exc.handle(request, response)
         except SystemExit:
             pass
-        except IOError, exc:
-            # Broken pipe
-            logger.warning('%s: %s', exc.__class__.__name__, exc)
         except:
             # unhandled error
             logger.exception('Unhandled exception for %s', request.uri())
