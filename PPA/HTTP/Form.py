@@ -1,4 +1,6 @@
-# $Id: Form.py,v 1.7 2007/03/26 15:34:00 ods Exp $
+# $Id: Form.py,v 1.8 2007/05/10 13:15:59 ods Exp $
+
+__all__ = ['FormData']
 
 import sys, re
 from weakref import WeakKeyDictionary
