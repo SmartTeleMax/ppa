@@ -1,4 +1,3 @@
-
 """
 PPA Forms package.
 
@@ -90,12 +89,16 @@ class Email(String): pass
 
 and Email instance tries to render template, templates are being searched using template controller in the next order:
 
-'Email', 'String', 'ScalarField', 'Fields'
+'Email', 'String', 'ScalarField', 'Field'
 
 Refer to fields docstrings to determine template's namespaces.
 
 Thats all.
 """
 
-from Form import Form
+__all__ = ['UIForm', 'Converters', 'Fields']
+
+from Form import UIForm
 import Converters, Fields, Layout
+
+Form = UIForm  # For ones who like ambiguous names
