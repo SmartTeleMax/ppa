@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.6 2007/03/23 11:31:04 ods Exp $
+# $Id: Form.py,v 1.7 2007/03/26 15:34:00 ods Exp $
 
 import sys, re
 from weakref import WeakKeyDictionary
@@ -12,7 +12,7 @@ subNonChar = re.compile(
             re.U).sub
 
 
-class Form(object):
+class FormData(object):
 
     __cache = WeakKeyDictionary()
 
@@ -29,7 +29,7 @@ class Form(object):
             if hs.has_key('content-length'):
                 env['CONTENT_LENGTH'] = hs['content-length']
             cls.__cache[request] = field_storage = \
-                                    cgi.FieldStorage(fp=request, environ=env)
+                cgi.FieldStorage(fp=request, environ=env, keep_blank_values=1)
         self = object.__new__(cls)
         self._charset = charset
         self._errors = errors
@@ -48,19 +48,38 @@ class Form(object):
         return subNonChar(self._replacement,
                           value.decode(self._charset, self._errors))
         
+    def __getitem__(self, key):
+        try:
+            fields = self._field_storage[key]
+        except KeyError:
+            return []
+        if not isinstance(fields, list):
+            fields = [fields]
+        return fields
+    
     def getString(self, key, default=None):
         '''Like of getfirst, returning unicode object'''
-        value = self.getfirst(key)
+        value = self._field_storage.getfirst(key)
         if value is None:
             return default
         return self._decode(value)
 
     def getStringList(self, key):
         '''Like getlist, returning unicode objects'''
-        return [self._decode(item) for item in self.getlist(key)]
+        return [self._decode(item)
+                for item in self._field_storage.getlist(key)]
 
-    def __getattr__(self, name):
-        return getattr(self._field_storage, name)
+    def getFile(self, key):
+        fields = self.getFileList(key)
+        if fields:
+            return fields[0]
+
+    def getFileList(self, key):
+        return [field for field in self[key] if field.file]
+
+
+
+Form = FormData  # For backward compatibility
 
 
 # XXX Unfinished own implementation
