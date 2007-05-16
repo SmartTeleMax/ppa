@@ -159,7 +159,7 @@ class Schema(Field):
         value = context.value  # XXX otherwise references to other fields won't
                                # work
         for subfield_name, subfield_type in self.subfields:
-            subcontext = context.child(subfield_name, branch=False)
+            subcontext = context.entry(subfield_name)
             value.update(subfield_type.getDefault(state, subcontext))
         return value
 
@@ -167,7 +167,7 @@ class Schema(Field):
         # XXX assert filter.show is not None
         form_content = {}
         for subfield_name, subfield_type in self.subfields:
-            subcontext = context.child(subfield_name, branch=False)
+            subcontext = context.entry(subfield_name)
             #new_filter = filter(subfield_type, subfield_name, context)
             if True: # XXX new_filter.show is not None:
                 form_content.update(subfield_type.toForm(state, subcontext))
@@ -180,7 +180,7 @@ class Schema(Field):
                   subfields=subfields, errors=state.errors,
                   params=state.params)
         for subfield_name, subfield_type in self.subfields:
-            subcontext = context.child(subfield_name, branch=False)
+            subcontext = context.entry(subfield_name)
             # XXX new_filter = filter(subfield_type, subfield_name, context)
             if True: # XXX new_filter.show is not None:
                 subfields[subfield_name] = subfield_type.render(
@@ -200,7 +200,7 @@ class Schema(Field):
                                # work
         errors = {}
         for subfield_name, subfield_type in self.subfields:
-            subcontext = context.child(subfield_name, branch=False)
+            subcontext = context.entry(subfield_name)
             # XXX new_filter = filter(subfield_type, subfield_name, context)
             if True: # XXX new_filter.accept:
                 subfield_value, subfield_errors = \
@@ -219,7 +219,7 @@ class Schema(Field):
         # propogate event to subfields
         # XXX should this be done before or after calling own handlers?
         for subfield_name, subfield_type in self.subfields:
-            subcontext = context.child(subfield_name, branch=False)
+            subcontext = context.entry(subfield_name)
             # XXX new_filter = filter(subfield_type, subfield_name, context)
             if True: # XXX new_filter.event:
                 subfield_type.handleEvent(state, subcontext, event, actions,
@@ -337,7 +337,7 @@ class Password(ScalarField):
     mismatch_error = "Passwords doesn't match"
 
     def accept(self, state, context, form):
-        confirm_context = context.child(context.name+'-confirm', branch=False)
+        confirm_context = context.entry(context.name+'-confirm')
         old_value = context.value[context.name]
         
         self.fetch(state, context, form)
@@ -376,8 +376,7 @@ class FixedList(Field):
         items = []
         for index in xrange(self.length):
             item_field_name = self.itemFieldName(context.name, index)
-            item_context = context.child(item_field_name, value={},
-                                         branch=False)
+            item_context = context.entry(item_field_name, value={})
             item_value = self.itemField.getDefault(state, item_context)
             items.append(item_value[item_context.name])
         return {context.name: items}
@@ -387,9 +386,8 @@ class FixedList(Field):
         assert len(items)==self.length
         for index, value in enumerate(items):
             item_field_name = self.itemFieldName(context.name, index)
-            item_context = context.child(item_field_name,
-                                         {item_field_name: value},
-                                         branch=False)
+            item_context = context.entry(item_field_name,
+                                         {item_field_name: value})
             # XXX new_filter = filter(self.itemField, item_field_name, new_context)
             #if new_filter.show is None:
             #    continue
@@ -404,9 +402,8 @@ class FixedList(Field):
         for index in xrange(self.length):
             item_field_name = self.itemFieldName(context.name, index)
             value = context.scalar[index]
-            item_context = context.child(item_field_name,
-                                         {item_field_name: value},
-                                         branch=False)
+            item_context = context.entry(item_field_name,
+                                         {item_field_name: value})
             # XXX new_filter = filter(self.itemField, item_field_name, new_context)
             #if new_filter.show is None:
             #    continue
@@ -426,9 +423,8 @@ class FixedList(Field):
         items = context.scalar
         for index in xrange(self.length):
             item_field_name = self.itemFieldName(context.name, index)
-            item_context = context.child(item_field_name,
-                                         {item_field_name: items[index]},
-                                         branch=False)
+            item_context = context.entry(item_field_name,
+                                         {item_field_name: items[index]})
             # XXX new_filter = filter(self.itemField, item_field_name, new_context)
             #if not new_filter.accept:
             #    continue
@@ -451,9 +447,8 @@ class FixedList(Field):
         items = context.scalar
         for index in xrange(self.length):
             item_field_name = self.itemFieldName(context.name, index)
-            item_context = context.child(item_field_name,
-                                         {item_field_name: items[index]},
-                                         branch=False)
+            item_context = context.entry(item_field_name,
+                                         {item_field_name: items[index]})
             # XXX new_filter = filter(self.itemField, item_field_name, new_context)
             #if not new_filter.event:
             #    continue
@@ -466,11 +461,11 @@ class Container(Field):
     schema = Schema(subfields=[])
 
     def getDefault(self, state, context):
-        new_context = context.child('', {})
+        new_context = context.branch('')
         return {context.name: self.schema.getDefault(state, new_context)}
 
     def toForm(self, state, context):
-        new_context = context.child('', context.scalar)
+        new_context = context.branch('', context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         #if new_filter.show is None:
         #    return {}
@@ -479,7 +474,7 @@ class Container(Field):
     def prepareNamespace(self, state, context, requisites,
                          template_selector, global_namespace={}):
         # XXX Or just render them into content variable?
-        new_context = context.child('', context.scalar)
+        new_context = context.branch('', context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         #if new_filter.show is None:
         #    ns = {'subfields': {}}
@@ -497,9 +492,9 @@ class Container(Field):
 
     def accept(self, state, context, form):
         if not context.value.has_key(field_name):
-            new_context = context.child('', {})
+            new_context = context.branch('')
             context.value.update(self.getDefault(state, new_context))
-        new_context = context.child('', context.scalar)
+        new_context = context.branch('', context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         #if not new_filter.accept:
         #    return {}, {}, {}
@@ -512,7 +507,7 @@ class Container(Field):
                           template_selector, global_namespace)
         # propogate event to subfields
         # XXX should this be done before or after calling own handlers?
-        new_context = context.child('', context.scalar)
+        new_context = context.branch('', context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         if True: # XXX new_filter.event:
             self.schema.handleEvent(state, new_context, event, actions,
@@ -633,10 +628,9 @@ class File(Field):
         import os.path
         
         sources = []
-        url_context = context.child(context.name+'-url', branch=False)
-        servfile_context = context.child(context.name+'-sid', branch=False)
-        filename_xontext = context.child(context.name+'-filename',
-                                         branch=False)
+        url_context = context.entry(context.name+'-url')
+        servfile_context = context.entry(context.name+'-sid')
+        filename_context = context.entry(context.name+'-filename')
 
         self.fetch(state, url_context, form)
         state.form_content[context.nameInForm] = context.scalar
@@ -644,8 +638,7 @@ class File(Field):
         state.form_content[filename_context.nameInForm] = ''
 
         if self.allowUpload:
-            upload_context = context.child(context.name+'-upload',
-                                           branch=False)
+            upload_context = context.entry(context.name+'-upload')
             try:
                 filename = form[upload_context.nameInForm].filename or ''
                 remotefile = form[upload_context.nameInForm].file
@@ -944,8 +937,8 @@ class VarList(Field):
     allowAppend = True
     
     def itemFieldName(self, field_name, index):
-        return field_name.child('%s-%d' % (field_name, index),
-                                branch=False)
+        return '%s-%d' % (field_name, index)
+
     def lengthFieldName(self, field_name):
         return '%s-length' % field_name
 
@@ -954,14 +947,12 @@ class VarList(Field):
 
     def toForm(self, state, context):
         items = context.scalar
-        length_context = context.child(self.lengthFieldName(context.name),
-                                       branch=False)
+        length_context = context.entry(self.lengthFieldName(context.name))
         form_content = {length_context.nameInForm: len(items)}
         for index, value in enumerate(items):
             item_field_name = self.itemFieldName(context.name, index)
-            item_context = context.child(item_field_name,
-                                         {item_field_name: value},
-                                         branch=False)
+            item_context = context.entry(item_field_name,
+                                         {item_field_name: value})
             # XXX new_filter = filter(self.itemField, item_field_name, item_context)
             #if new_filter.show is None:
             #    continue
@@ -977,7 +968,7 @@ class VarList(Field):
         length = form_content[self.lengthFieldName(field_name).inForm]
         for index in xrange(length):
             item_field_name = self.itemFieldName(field_name, index)
-            new_context = context.child(
+            new_context = context.branch(
                         {item_field_name: context.value[field_name][index]})
             new_filter = filter(self.itemField, item_field_name, new_context)
             if new_filter.show is None:
@@ -1005,12 +996,12 @@ class VarList(Field):
         while len(items)<length:
             item_field_name = self.itemFieldName(field_name, len(items))
             item_value = self.itemField.getDefault(item_field_name,
-                                                   context.child({}), params)
+                                                   context.branch({}), params)
             items.append(item_value[item_field_name])
         errors = {}
         for index in xrange(length):
             item_field_name = self.itemFieldName(field_name, index)
-            new_context = context.child({item_field_name: items[index]})
+            new_context = context.branch({item_field_name: items[index]})
             new_filter = filter(self.itemField, item_field_name, new_context)
             if not new_filter.accept:
                 continue
@@ -1034,7 +1025,7 @@ class VarList(Field):
         items = context.value[field_name]
         for index, item in enumerate(items):
             item_field_name = self.itemFieldName(field_name, index)
-            new_context = context.child({item_field_name: item})
+            new_context = context.branch({item_field_name: item})
             new_filter = filter(self.itemField, item_field_name, new_context)
             if not new_filter.event:
                 continue

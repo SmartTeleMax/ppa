@@ -68,17 +68,20 @@ class NVContext(object):
         '''Easy access to current value assuming it's of scalar type'''
         return self.value[self.name]
 
-    def child(self, name, value=None, branch=True):
-        if branch:
-            prefix = '%s%s.' % (self.prefix, self.name)
-        else:
-            prefix = self.prefix
+    def entry(self, name, value=None):
         if value is None:
             value = self.value
             parent = self.parent
         else:
             parent = self
-        return self.__class__(value, name=name, prefix=prefix, parent=parent)
+        return self.__class__(value, name=name, prefix=self.prefix,
+                              parent=parent)
+
+    def branch(self, name, value=None):
+        if value is None:
+            value = {}
+        prefix = '%s%s.' % (self.prefix, self.name)
+        return self.__class__(value, name=name, prefix=prefix, parent=self)
 
     def __getitem__(self, path):
         context = self
