@@ -53,8 +53,12 @@ class FieldTemplateSelector:
 
 
 class NVContext(object):
-    def __init__(self, value={}, name='', prefix='', parent=None):
+    '''Name-value context'''
+
+    def __init__(self, value=None, name=None, prefix='', parent=None):
         self.name = name
+        if value is None:
+            value = {}
         self.value = value
         self.prefix = prefix
         self.parent = parent
@@ -77,11 +81,11 @@ class NVContext(object):
         return self.__class__(value, name=name, prefix=self.prefix,
                               parent=parent)
 
-    def branch(self, name, value=None):
+    def branch(self, value=None):
         if value is None:
             value = {}
         prefix = '%s%s.' % (self.prefix, self.name)
-        return self.__class__(value, name=name, prefix=prefix, parent=self)
+        return self.__class__(value, name=None, prefix=prefix, parent=self)
 
     def __getitem__(self, path):
         context = self

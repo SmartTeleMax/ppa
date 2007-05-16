@@ -461,11 +461,11 @@ class Container(Field):
     schema = Schema(subfields=[])
 
     def getDefault(self, state, context):
-        new_context = context.branch('')
+        new_context = context.branch()
         return {context.name: self.schema.getDefault(state, new_context)}
 
     def toForm(self, state, context):
-        new_context = context.branch('', context.scalar)
+        new_context = context.branch(context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         #if new_filter.show is None:
         #    return {}
@@ -474,7 +474,7 @@ class Container(Field):
     def prepareNamespace(self, state, context, requisites,
                          template_selector, global_namespace={}):
         # XXX Or just render them into content variable?
-        new_context = context.branch('', context.scalar)
+        new_context = context.branch(context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         #if new_filter.show is None:
         #    ns = {'subfields': {}}
@@ -492,9 +492,9 @@ class Container(Field):
 
     def accept(self, state, context, form):
         if not context.value.has_key(field_name):
-            new_context = context.branch('')
+            new_context = context.branch()
             context.value.update(self.getDefault(state, new_context))
-        new_context = context.branch('', context.scalar)
+        new_context = context.branch(context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         #if not new_filter.accept:
         #    return {}, {}, {}
@@ -507,7 +507,7 @@ class Container(Field):
                           template_selector, global_namespace)
         # propogate event to subfields
         # XXX should this be done before or after calling own handlers?
-        new_context = context.branch('', context.scalar)
+        new_context = context.branch(context.scalar)
         # XXX new_filter = filter(self.schema, new_name, new_context)
         if True: # XXX new_filter.event:
             self.schema.handleEvent(state, new_context, event, actions,
@@ -996,7 +996,7 @@ class VarList(Field):
         while len(items)<length:
             item_field_name = self.itemFieldName(field_name, len(items))
             item_value = self.itemField.getDefault(item_field_name,
-                                                   context.branch({}), params)
+                                                   context.branch(), params)
             items.append(item_value[item_field_name])
         errors = {}
         for index in xrange(length):
