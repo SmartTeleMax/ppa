@@ -1,3 +1,5 @@
+# $Id$
+
 __all__ = ['UIForm']
 
 from Fields import Schema
@@ -131,6 +133,10 @@ class UIForm:
     # for internal use:
     #   errors          - occured errors
     #   form_content    - None # original form params
+    # attributes:
+    #   requisites      - requisites object to store data needed to render
+    #                     view (e.g. some JavaScript initialization to put
+    #                     in <head>)
     
     def __init__(self, schema, value=None, params=None,
                  errors=None, form_content=None):
@@ -143,6 +149,7 @@ class UIForm:
         if value is None:
             value = schema.getDefault(self, NVContext())
         self.value = value
+        self.requisites = None
 
     def render(self, template_controller, global_namespace={}):
         """Renders form using template_controller to find fields templates,
@@ -151,12 +158,12 @@ class UIForm:
         context = NVContext(self.value)
         if not self.form_content:
             self.form_content = self.schema.toForm(self, context)
-        requisites = self.createRequisites()
+        self.requisites = self.createRequisites()
         template_selector = FieldTemplateSelector(
                                     template_controller.getTemplate)
-        content = self.schema.render(self, context, requisites,
+        content = self.schema.render(self, context,
                                      template_selector, global_namespace)
-        return {'content': content, 'requisites': requisites}
+        return content
 
     def accept(self, form):
         """Accepts form fields from from (PPA.HTTP.Form) with self.schema,

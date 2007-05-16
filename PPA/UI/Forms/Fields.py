@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Fields.py,v 1.4 2007/05/16 14:10:59 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -37,31 +37,27 @@ class Field(object):
         '''Converts fields to strings and puts into form_content.'''
         return {context.nameInForm: context.scalar}
 
-    def fillRequisites(self, state, context, requisites):
+    def fillRequisites(self, state, context):
         for filler in self.requisitesFillers:
-            filler(self, state, context, requisites)
+            filler(self, state, context)
 
-    def prepareNamespace(self, state, context, requisites,
+    def prepareNamespace(self, state, context,
                          template_selector, global_namespace={}):
         # XXX Just pass state?
         return dict(state.params, fieldName=context.nameInForm, fieldType=self,
                     content=state.form_content, errors=state.errors,
                     params=state.params)
 
-    def render(self, state, context, requisites, template_selector,
-               global_namespace):
+    def render(self, state, context, template_selector, global_namespace):
         '''Return HTML representation of field.
         state               - current form state
         context             - name-value context
-        requisites          - requisites object to store data needed to render
-                              view (e.g. some JavaScript initialization to put
-                              in <head>)
         template_selector   - callable object returning template for given
                               field type
         global_namespace    - global namespace for template'''
-        self.fillRequisites(state, context, requisites)
+        self.fillRequisites(state, context)
         local_namespace = self.prepareNamespace(
-                                        state, context, requisites,
+                                        state, context,
                                         template_selector, global_namespace)
         template = template_selector(self, 'edit') # XXX filter.show
         return template.toString(global_namespace, local_namespace)
@@ -171,7 +167,7 @@ class Schema(Field):
                 form_content.update(subfield_type.toForm(state, subcontext))
         return form_content
 
-    def prepareNamespace(self, state, context, requisites,
+    def prepareNamespace(self, state, context,
                          template_selector, global_namespace={}):
         subfields = {}
         ns = dict(state.params, fieldName=context.nameInForm, fieldType=self,
@@ -182,7 +178,7 @@ class Schema(Field):
             # XXX new_filter = filter(subfield_type, subfield_name, context)
             if True: # XXX new_filter.show is not None:
                 subfields[subfield_name] = subfield_type.render(
-                                        state, subcontext, requisites,
+                                        state, subcontext,
                                         template_selector, global_namespace)
         return ns
 
@@ -276,9 +272,9 @@ class AbstractChoiceField(ScalarField):
             return {}, {context.nameInForm: self.noneSelectedError}
         return {context.name: value}, {}
 
-    def prepareNamespace(self, state, context, requisites,
+    def prepareNamespace(self, state, context,
                          template_selector, global_namespace={}):
-        ns = Field.prepareNamespace(self, state, context, requisites,
+        ns = Field.prepareNamespace(self, state, context,
                                     template_selector, global_namespace)
         return dict(ns, options=self.getOptions(state, context))
     
@@ -392,7 +388,7 @@ class FixedList(Field):
             form_content.update(self.itemField.toForm(state, item_context))
         return form_content
 
-    def prepareNamespace(self, state, context, requisites,
+    def prepareNamespace(self, state, context,
                          template_selector, global_namespace={}):
         items = []
         ns = dict(state.params, fieldName=context.nameInForm, fieldType=self,
@@ -406,7 +402,7 @@ class FixedList(Field):
             #if new_filter.show is None:
             #    continue
             items.append(self.itemField.render(
-                                        state, item_context, requisites,
+                                        state, item_context,
                                         template_selector, global_namespace))
         return ns
 
@@ -469,7 +465,7 @@ class Container(Field):
         #    return {}
         return self.schema.toForm(state, new_context)
 
-    def prepareNamespace(self, state, context, requisites,
+    def prepareNamespace(self, state, context,
                          template_selector, global_namespace={}):
         # XXX Or just render them into content variable?
         new_context = context.branch(context.scalar)
@@ -477,9 +473,8 @@ class Container(Field):
         #if new_filter.show is None:
         #    ns = {'subfields': {}}
         #else:
-        ns = self.schema.prepareNamespace(
-                                    state, new_context, requisites,
-                                    template_selector, global_namespace)
+        ns = self.schema.prepareNamespace(state, new_context,
+                                          template_selector, global_namespace)
         return dict(ns, fieldName=context.nameInForm, fieldType=self)
 
     def fetch(self, state, context, form):
@@ -554,17 +549,15 @@ class SwitchField(Field):
         #    return {}
         return spec.toForm(state, context)
 
-    def fillRequisites(self, state, context, requisites):
+    def fillRequisites(self, state, context):
         raise RuntimeError
 
-    def render(self, state, context, requisites,
-               template_selector, global_namespace):
+    def render(self, state, context, template_selector, global_namespace):
         spec = self.optionSpec(context)
         # XXX new_filter = filter(spec, field_name, context)
         #if new_filter.show is None:
         #    return '' # XXX
-        return spec.render(state, context, requisites,
-                           template_selector, global_namespace)
+        return spec.render(state, context, template_selector, global_namespace)
 
     def fetch(self, state, context, form):
         raise RuntimeError
