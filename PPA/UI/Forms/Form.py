@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Form.py,v 1.5 2007/05/16 14:48:39 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -54,16 +54,20 @@ class FieldTemplateSelector:
         return template
 
 
-class NVContext(object):
+class FieldContext(object):
     '''Name-value context'''
 
-    def __init__(self, value=None, name=None, prefix='', parent=None):
+    def __init__(self, state, field_type, value=None, name=None, prefix='',
+                 parent=None, ac_filter=BaseACFilter()):
+        self.state = state
+        self.fieldType = field_type
         self.name = name
         if value is None:
             value = {}
         self.value = value
         self.prefix = prefix
         self.parent = parent
+        self.acFilter = ac_filter(self)
 
     @property
     def nameInForm(self):
@@ -74,20 +78,21 @@ class NVContext(object):
         '''Easy access to current value assuming it's of scalar type'''
         return self.value[self.name]
 
-    def entry(self, name, value=None):
+    def entry(self, field_type, name, value=None):
         if value is None:
             value = self.value
             parent = self.parent
         else:
             parent = self
-        return self.__class__(value, name=name, prefix=self.prefix,
-                              parent=parent)
+        return self.__class__(self.state, field_type, value=value, name=name,
+                              prefix=self.prefix, parent=parent)
 
-    def branch(self, value=None):
+    def branch(self, field_type, value=None):
         if value is None:
             value = {}
         prefix = '%s%s.' % (self.prefix, self.name)
-        return self.__class__(value, name=None, prefix=prefix, parent=self)
+        return self.__class__(self.state, field_type, value=value, name=None,
+                              prefix=prefix, parent=self)
 
     def __getitem__(self, path):
         context = self
@@ -101,26 +106,43 @@ class NVContext(object):
         return value
 
 
-#class ACFilter:
-#    '''Access control filter.
-#    
-#    show    - either None (dont show) or string with render class
-#    accept  - True if field have to be accepted from form
-#    '''
-#
-#    def __init__(self, show='edit', accept=True, event=True):
-#        self.show = show
-#        self.accept = accept
-#        self.event = event
-#
-#    def __call__(self, field_type, context):
-#        # Unchanged by default
-#        return self
-#
-#    def clone(self, **kwargs):
-#        return self.__class__(kwargs.get('show', self.show),
-#                              kwargs.get('accept', self.accept),
-#                              kwargs.get('event', self.event))
+class BaseACFilter:
+    '''Access control filter.
+    
+    show    - either None (dont show) or string with render class
+    accept  - True if field have to be accepted from form
+    '''
+
+    renderClassesOrder = [None, 'view', 'edit']
+
+    def __init__(self, render_class='edit'):
+        self.renderClass = render_class
+
+    def restrictClass(self, render_class):
+        if self.renderClassesOrder.index(render_class) < \
+                self.renderClassesOrder.index(self.renderClass):
+            return render_class
+        else:
+            return self.renderClass
+
+    def __call__(self, context):
+        # Unchanged by default
+        self
+
+
+class ACFilter(BaseACFilter):
+
+    def __init__(self, render_class='edit', attr='permission'):
+        BaseACFilter.__init__(self, render_class)
+        self.attr = attr
+
+    def getPermission(self, context):
+        return getattr(context.fieldType, self.attr, 'edit')
+
+    def __call__(self, context):
+        permission = self.getPermission(context)
+        new_class = self.restrictClass(permission)
+        return self.__class__(render_class=new_class, attr=self.attr)
 
 
 class UIForm:
@@ -138,16 +160,18 @@ class UIForm:
     #                     view (e.g. some JavaScript initialization to put
     #                     in <head>)
     
-    def __init__(self, schema, value=None, params=None,
+    def __init__(self, schema, value=None, filter=BaseACFilter(), params=None,
                  errors=None, form_content=None):
         if not isinstance(schema, Schema):
             schema = Schema(subfields=schema)
         self.schema = schema
+        self.acFilter = filter
         self.params = params
         self.errors = errors or {}
         self.form_content = form_content or {}
         if value is None:
-            value = schema.getDefault(self, NVContext())
+            context = FieldContext(self, schema, ac_filter=self.acFilter)
+            value = schema.getDefault(self, context)
         self.value = value
         self.requisites = None
 
@@ -155,13 +179,14 @@ class UIForm:
         """Renders form using template_controller to find fields templates,
         returns dict(content=unicode, requisites=list), where content is
         form rendered to html and requisites is SOMETHING"""
-        context = NVContext(self.value)
+        context = FieldContext(self, self.schema, self.value,
+                               ac_filter=self.acFilter)
         if not self.form_content:
-            self.form_content = self.schema.toForm(self, context)
+            self.form_content = self.schema.toForm(context)
         self.requisites = self.createRequisites()
         template_selector = FieldTemplateSelector(
                                     template_controller.getTemplate)
-        content = self.schema.render(self, context,
+        content = self.schema.render(context,
                                      template_selector, global_namespace)
         return content
 
@@ -169,10 +194,11 @@ class UIForm:
         """Accepts form fields from from (PPA.HTTP.Form) with self.schema,
         initialized something of self.errors, self.form_content, self.content
         """
-        context = NVContext(self.value)
+        context = FieldContext(self, self.schema, self.value,
+                               ac_filter=self.acFilter)
         # XXX Do we need to return form_content and errors or just fill them
         # in-place?
-        self.value, self.errors = self.schema.accept(self, context, form)
+        self.value, self.errors = self.schema.accept(context, form)
 
     def hasErrors(self):
         return bool(self.errors)

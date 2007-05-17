@@ -7,13 +7,13 @@ class Converter:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         """Returns value, None if convertation was successful, or None, error
         if there was error"""
         
         return value, None
 
-    def toForm(self, field_type, value):
+    def toForm(self, context, value):
         """Returns value converted for form"""
         
         return value
@@ -35,17 +35,16 @@ class Chain(Converter):
         self.chain = args
         Converter.__init__(self, **kwargs)
     
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         for converter in self.chain:
-            value, error = converter.fromForm(field_type, value,
-                                              context, params)
+            value, error = converter.fromForm(context, value)
             if error is not None:
                 return None, error
         return value, None
 
-    def toForm(self, field_type, value):
+    def toForm(self, context, value):
         for converter in reversed(self.chain):
-            value = converter.toForm(field_type, value)
+            value = converter.toForm(context, value)
         return value
 
 
@@ -61,7 +60,7 @@ class Length(Converter):
     max = 255
     error = 'Length error'
     
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         if self.min<=len(value)<=self.max:
             return value, None
         else:
@@ -75,7 +74,7 @@ class NotNull(Converter):
 
     error = 'This field cant be empty'
     
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         if value:
             return value, None
         else:
@@ -85,7 +84,7 @@ class NotNull(Converter):
 class Strip(Converter):
     """Returns stripped string, no errors are raised"""
     
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         return value.strip(), None
 
 
@@ -98,7 +97,7 @@ class Pattern(Converter):
     pattern = None
     error = "String doesn't match pattern"
 
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         if self.pattern:
             import re
             if not re.match(self.pattern, value):
@@ -145,13 +144,13 @@ class Number(Converter):
         self.type = type
         Converter.__init__(self, **kwargs)
 
-    def toForm(self, field_type, value):
+    def toForm(self, context, value):
         if value is None:
             return ''
         return str(value)
 
-    def fromForm(self, state, context, field_type, value):
-        if not value and field_type.allowNone:
+    def fromForm(self, context, value):
+        if not value and context.fieldType.allowNone:
             return None, None
         try:
             value = self.type(value)
@@ -187,5 +186,5 @@ else:
 class StripTags(Converter):
     allowedTags = []
 
-    def fromForm(self, state, context, field_type, value):
+    def fromForm(self, context, value):
         return _strip_tags(value, self.allowedTags), None
