@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.7 2007/06/01 13:27:18 ods Exp $
+# $Id: Form.py,v 1.8 2007/06/01 13:44:30 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -153,7 +153,8 @@ class UIForm:
     #   schema          - form schema (either Schema object or list of fields)
     #   value           - converted (python) values
     #   filter          - access control filter
-    #   params          - any object to pass to fields (application dependent)
+    #   params          - dictionary of parameters to pass to fields
+    #                     (application dependent)
     # for internal use:
     #   errors          - occured errors
     #   form_content    - None # original form params
@@ -162,7 +163,7 @@ class UIForm:
     #                     view (e.g. some JavaScript initialization to put
     #                     in <head>)
     
-    def __init__(self, schema, value=None, filter=BaseACFilter(), params=None,
+    def __init__(self, schema, value=None, filter=BaseACFilter(), params={},
                  errors=None, form_content=None):
         if not isinstance(schema, Schema):
             schema = Schema(subfields=schema)
