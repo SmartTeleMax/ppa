@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.8 2007/06/01 13:44:30 ods Exp $
+# $Id: Form.py,v 1.9 2007/06/01 14:09:24 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -15,7 +15,7 @@ class FieldTemplateSelector:
         self._cache = {}
 
     def getTemplateName(self, type_name, render_class):
-        return '%s.%s.html' % (type_name, render_class)
+        return '%s.%s' % (type_name, render_class)
 
     def __call__(self, field_type, render_class):
         cache = self._cache
