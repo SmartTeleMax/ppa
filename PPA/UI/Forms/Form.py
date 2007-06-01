@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.5 2007/05/16 14:48:39 ods Exp $
+# $Id: Form.py,v 1.6 2007/05/17 15:17:00 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -54,6 +54,45 @@ class FieldTemplateSelector:
         return template
 
 
+class BaseACFilter:
+    '''Access control filter.
+    
+    show    - either None (dont show) or string with render class
+    accept  - True if field have to be accepted from form
+    '''
+
+    renderClassesOrder = [None, 'view', 'edit']
+
+    def __init__(self, render_class='edit'):
+        self.renderClass = render_class
+
+    def restrictClass(self, render_class):
+        if self.renderClassesOrder.index(render_class) < \
+                self.renderClassesOrder.index(self.renderClass):
+            return render_class
+        else:
+            return self.renderClass
+
+    def __call__(self, context):
+        # Unchanged by default
+        self
+
+
+class ACFilter(BaseACFilter):
+
+    def __init__(self, render_class='edit', attr='permission'):
+        BaseACFilter.__init__(self, render_class)
+        self.attr = attr
+
+    def getPermission(self, context):
+        return getattr(context.fieldType, self.attr, 'edit')
+
+    def __call__(self, context):
+        permission = self.getPermission(context)
+        new_class = self.restrictClass(permission)
+        return self.__class__(render_class=new_class, attr=self.attr)
+
+
 class FieldContext(object):
     '''Name-value context'''
 
@@ -104,45 +143,6 @@ class FieldContext(object):
         for name in names:
             value = value[name]
         return value
-
-
-class BaseACFilter:
-    '''Access control filter.
-    
-    show    - either None (dont show) or string with render class
-    accept  - True if field have to be accepted from form
-    '''
-
-    renderClassesOrder = [None, 'view', 'edit']
-
-    def __init__(self, render_class='edit'):
-        self.renderClass = render_class
-
-    def restrictClass(self, render_class):
-        if self.renderClassesOrder.index(render_class) < \
-                self.renderClassesOrder.index(self.renderClass):
-            return render_class
-        else:
-            return self.renderClass
-
-    def __call__(self, context):
-        # Unchanged by default
-        self
-
-
-class ACFilter(BaseACFilter):
-
-    def __init__(self, render_class='edit', attr='permission'):
-        BaseACFilter.__init__(self, render_class)
-        self.attr = attr
-
-    def getPermission(self, context):
-        return getattr(context.fieldType, self.attr, 'edit')
-
-    def __call__(self, context):
-        permission = self.getPermission(context)
-        new_class = self.restrictClass(permission)
-        return self.__class__(render_class=new_class, attr=self.attr)
 
 
 class UIForm:
