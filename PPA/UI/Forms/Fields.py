@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.5 2007/05/16 14:48:39 ods Exp $
+# $Id: Fields.py,v 1.6 2007/05/17 15:17:00 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -171,9 +171,8 @@ class Schema(Field):
                          template_selector, global_namespace={}):
         subfields = {}
         state = context.state
-        ns = dict(state.params, fieldName=context.nameInForm, fieldType=self,
-                  subfields=subfields, errors=state.errors,
-                  params=state.params)
+        ns = dict(state.params, fieldType=self, subfields=subfields,
+                  errors=state.errors, params=state.params)
         for subfield_name, subfield_type in self.subfields:
             subcontext = context.entry(subfield_type, subfield_name)
             if subcontext.acFilter.renderClass is not None:
