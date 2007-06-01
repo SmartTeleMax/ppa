@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.6 2007/05/17 15:17:00 ods Exp $
+# $Id: Fields.py,v 1.7 2007/06/01 14:08:39 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -129,7 +129,7 @@ class ScalarField(Field):
         Field.__init__(self, *args, **kwargs)
     
     def fromForm(self, context):
-        form_value = state.form_content[context.nameInForm]
+        form_value = context.state.form_content[context.nameInForm]
         value, error = self.converter.fromForm(context, form_value)
         if error is None:
             return {context.name: value}, {}
@@ -187,7 +187,6 @@ class Schema(Field):
         raise RuntimeError()
 
     def accept(self, context, form):
-        form_content = {}
         value = context.value  # XXX otherwise references to other fields won't
                                # work
         errors = {}
@@ -199,7 +198,8 @@ class Schema(Field):
                 value.update(subfield_value)
                 errors.update(subfield_errors)
             else:
-                subfield_type.toForm(subcontext)
+                context.state.form_content.update(
+                    subfield_type.toForm(subcontext))
 
         return value, errors
 
@@ -248,6 +248,7 @@ class AbstractChoiceField(ScalarField):
     noneSelectedError = 'Nothing is selected'
     allowNone = True
     default = None
+    typeName = "Choice"
     
     def getOptions(self, context):
         """Returns iterable of tuples (id, label)"""
@@ -291,23 +292,20 @@ class ListChoice(AbstractChoiceField):
         return dict(self.options).has_key(option)
 
 
-
-
-
-class MultipleChoice(ListChoice): # this shouldn't be, MultipleChoice is no Scalar
+class AbstractMultipleChoiceField(AbstractChoiceField): # this shouldn't be, MultipleChoice is no Scalar
     default = []
+    typeName = "MultipleChoice"
 
     def fetch(self, context, form):
-        return {context.nameInForm: form.getStringList(context.nameInForm)}
+        context.state.form_content[context.nameInForm] = \
+            form.getStringList(context.nameInForm)
     
     def fromForm(self, context):
         result_value = []
-        # XXX use hasOption?
-        options_dict = dict(self.getOptions(context))
         
-        for item in form_content[context.nameInForm]:
-            value, error = self.converter.fromForm(context, item)
-            if options_dict.has_key(value):
+        for id in context.state.form_content[context.nameInForm]:
+            value, error = self.converter.fromForm(context, id)
+            if value and self.hasOption(context, value):
                 result_value.append(value)
         
         if not result_value and not self.allowNone:
@@ -320,6 +318,18 @@ class MultipleChoice(ListChoice): # this shouldn't be, MultipleChoice is no Scal
         for item in context.scalar:
             value.append(self.converter.toForm(context, item))
         return {context.nameInForm: value}
+
+
+class ListMultipleChoice(AbstractMultipleChoiceField):
+    options = []  # List of (id, title) pairs
+    
+    __required__ = ('options',)
+
+    def getOptions(self, context):
+        return iter(self.options)
+
+    def hasOption(self, context, option):
+        return dict(self.options).has_key(option)
     
 
 class Password(ScalarField):
