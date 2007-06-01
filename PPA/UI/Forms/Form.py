@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.6 2007/05/17 15:17:00 ods Exp $
+# $Id: Form.py,v 1.7 2007/06/01 13:27:18 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -75,7 +75,7 @@ class BaseACFilter:
 
     def __call__(self, context):
         # Unchanged by default
-        self
+        return self
 
 
 class ACFilter(BaseACFilter):
@@ -124,14 +124,16 @@ class FieldContext(object):
         else:
             parent = self
         return self.__class__(self.state, field_type, value=value, name=name,
-                              prefix=self.prefix, parent=parent)
+                              prefix=self.prefix, parent=parent,
+                              ac_filter=self.acFilter)
 
     def branch(self, field_type, value=None):
         if value is None:
             value = {}
         prefix = '%s%s.' % (self.prefix, self.name)
         return self.__class__(self.state, field_type, value=value, name=None,
-                              prefix=prefix, parent=self)
+                              prefix=prefix, parent=self,
+                              ac_filter=self.acFilter)
 
     def __getitem__(self, path):
         context = self
