@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.8 2007/05/10 13:15:59 ods Exp $
+# $Id: Form.py,v 1.9 2007/05/10 13:22:07 ods Exp $
 
 __all__ = ['FormData']
 
@@ -9,8 +9,12 @@ from weakref import WeakKeyDictionary
 # Char ::= #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | 
 #          [#x10000- #x10FFFF]
 # (any Unicode character, excluding the surrogate blocks, FFFE, and FFFF)
+if sys.maxunicode > 0x10000:
+    uniCharTail = u'%s-%s' % (unichr(0x10000), unichr(min(sys.maxunicode, 0x10FFFF)))
+else:
+    uniCharTail = ''
 subNonChar = re.compile(
-            ur'[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD\U00010000-\U0010FFFF]',
+            ur'[^\x09\x0A\x0D\x20-\uD7FF\uE000-\uFFFD%s]' % uniCharTail,
             re.U).sub
 
 
