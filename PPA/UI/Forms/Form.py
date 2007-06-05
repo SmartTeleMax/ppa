@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.9 2007/06/01 14:09:24 ods Exp $
+# $Id: Form.py,v 1.10 2007/06/01 14:26:37 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -57,12 +57,16 @@ class FieldTemplateSelector:
 class BaseACFilter:
     '''Access control filter.
     
-    show    - either None (dont show) or string with render class
-    accept  - True if field have to be accepted from form
+    renderClass - either None (dont show) or string with render class
+    accept      - True if field have to be accepted from form
     '''
 
     renderClassesOrder = [None, 'view', 'edit']
 
+    @ property
+    def accept(self):
+        return bool(self.renderClass == 'edit')
+    
     def __init__(self, render_class='edit'):
         self.renderClass = render_class
 
@@ -115,7 +119,7 @@ class FieldContext(object):
     @property
     def scalar(self):
         '''Easy access to current value assuming it's of scalar type'''
-        return self.value[self.name]
+        return self.value.get(self.name) # XXX what to return if not found? default value
 
     def entry(self, field_type, name, value=None):
         if value is None:
@@ -151,8 +155,8 @@ class UIForm:
 
     # public parameters:
     #   schema          - form schema (either Schema object or list of fields)
-    #   value           - converted (python) values
-    #   filter          - access control filter
+    #   value           - dict of converted (python) values
+    #   filter          - access control filter (BaseACFilter() is default)
     #   params          - dictionary of parameters to pass to fields
     #                     (application dependent)
     # for internal use:
@@ -162,19 +166,23 @@ class UIForm:
     #   requisites      - requisites object to store data needed to render
     #                     view (e.g. some JavaScript initialization to put
     #                     in <head>)
+
+    templateSelectorClass = FieldTemplateSelector
+    filter = BaseACFilter()
     
-    def __init__(self, schema, value=None, filter=BaseACFilter(), params={},
+    def __init__(self, schema, value=None, filter=None, params={},
                  errors=None, form_content=None):
         if not isinstance(schema, Schema):
             schema = Schema(subfields=schema)
         self.schema = schema
-        self.acFilter = filter
+        if filter:
+            self.acFilter = filter
         self.params = params
         self.errors = errors or {}
         self.form_content = form_content or {}
         if value is None:
             context = FieldContext(self, schema, ac_filter=self.acFilter)
-            value = schema.getDefault(self, context)
+            value = schema.getDefault(context)
         self.value = value
         self.requisites = None
 
@@ -187,7 +195,7 @@ class UIForm:
         if not self.form_content:
             self.form_content = self.schema.toForm(context)
         self.requisites = self.createRequisites()
-        template_selector = FieldTemplateSelector(
+        template_selector = self.templateSelectorClass(
                                     template_controller.getTemplate)
         content = self.schema.render(context,
                                      template_selector, global_namespace)
