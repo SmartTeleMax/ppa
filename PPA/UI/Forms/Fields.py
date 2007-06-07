@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.7 2007/06/01 14:08:39 ods Exp $
+# $Id: Fields.py,v 1.8 2007/06/01 20:51:33 corva Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -25,7 +25,9 @@ class Field(object):
             except KeyError:
                 raise ValueError('Required param %r for field %r omited' % \
                                  (name, self.__class__.__name__))
-        self.__dict__.update(kwargs)
+        for name, value in kwargs.items():
+            setattr(self, name, value)
+        #self.__dict__.update(kwargs)
 
     def fromCode(self, value, params):
         return value

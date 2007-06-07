@@ -5,7 +5,7 @@ Usage:
 
 1. Importing
 
-from PPA.UI.Forms import Form, Converters, Fields
+from PPA.UI.Forms import UIForm, Converters, Fields
 
 2. Defining fields
 
@@ -49,22 +49,22 @@ Form is a statefull form representation.
 Form requires a fields specification, provided as Fields.Schema instance,
 or just a list of subfields (as provided to Schema):
 
-    form = Form(schema)
+    form = UIForm(schema)
 
 You may want to pass a default values to form:
 
-    form = Form(schema, values=dict(email='Enter your email here'))
+    form = UIForm(schema, values=dict(email='Enter your email here'))
 
 Or give some special application-specific data to be accessable in fields,
 like a db-connector:
 
-    form = Form(schema, params=dict(session=sqlalchemy.create_session(db)))
+    form = UIForm(schema, params=dict(session=sqlalchemy.create_session(db)))
 
 To render an empty form, use a render() emthod, in only accepts template_controller argument (an instance of PPA.Template.TemplateController). template_controller is used to find fields templates.
 
-The result of render is dict of two keys, 'content' - rendered form html and 'requisited' (not documented yet).
+The result of render html of rendered schema (unicode).
 
-    rendered_form = form.render(template_controller)
+    html = form.render(template_controller)
 
 To accept and convert values use accept(), the only argument is PPA.HTTP.Form.Form instance:
 
@@ -98,7 +98,5 @@ Thats all.
 
 __all__ = ['UIForm', 'Converters', 'Fields']
 
+import Form, Converters, Fields, HTMLFields
 from Form import UIForm
-import Converters, Fields, Layout
-
-Form = UIForm  # For ones who like ambiguous names
