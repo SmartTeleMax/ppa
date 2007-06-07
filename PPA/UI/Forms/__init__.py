@@ -96,7 +96,7 @@ Refer to fields docstrings to determine template's namespaces.
 Thats all.
 """
 
-__all__ = ['UIForm', 'Converters', 'Fields']
+__all__ = ['Form', 'Fields', 'HTMLFields', 'Converters', 'UIForm']
 
-import Form, Converters, Fields, HTMLFields
+import Form, Fields, HTMLFields, Converters
 from Form import UIForm
