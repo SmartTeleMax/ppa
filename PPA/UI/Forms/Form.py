@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.10 2007/06/01 14:26:37 ods Exp $
+# $Id: Form.py,v 1.11 2007/06/05 15:20:24 corva Exp $
 
 __all__ = ['UIForm']
 
@@ -168,7 +168,7 @@ class UIForm:
     #                     in <head>)
 
     templateSelectorClass = FieldTemplateSelector
-    filter = BaseACFilter()
+    acFilter = BaseACFilter()
     
     def __init__(self, schema, value=None, filter=None, params={},
                  errors=None, form_content=None):
