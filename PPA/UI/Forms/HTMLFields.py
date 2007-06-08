@@ -1,18 +1,20 @@
 
 import Fields
+from PPA.Template.Cook import quoteHTML
 
 class HTMLElementAttributes(object):
     """Represents html element attributes, __set__ accepts dictionary,
     __get__ returns formatted string"""
-    
+
     def __set__(self, inst, value):
         if type(value) is not dict:
             raise ValueError('elementAttributes must be dict')
-        self.value = value
+        inst._elementAttributes = value
 
     def __get__(self, inst, cls):
+        value = getattr(inst, '_elementAttributes', {})
         return ' '.join(
-            ['%s="%s"' % (key, value) for (key, value) in self.value.items()])
+            ['%s="%s"' % (k,quoteHTML(unicode(v))) for (k,v) in value.items()])
 
 
 class HTMLElement:
