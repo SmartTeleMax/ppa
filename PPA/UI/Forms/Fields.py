@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.8 2007/06/01 20:51:33 corva Exp $
+# $Id: Fields.py,v 1.9 2007/06/07 16:23:04 corva Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -633,12 +633,10 @@ class File(Field):
 
         if self.allowUpload:
             upload_context = context.entry(self, context.name+'-upload')
-            try:
-                filename = form[upload_context.nameInForm].filename or ''
-                remotefile = form[upload_context.nameInForm].file
-            except (KeyError, AttributeError):
-                pass
-            else:
+            fieldstorage_file = form.getFile(upload_context.nameInForm)
+            if fieldstorage_file is not None:
+                filename = fieldstorage_file.filename or ''
+                remotefile = fieldstorage_file.file
                 if remotefile:
                     # some browsers pass fullpath of file
                     for sep in ('/', '\\'):
