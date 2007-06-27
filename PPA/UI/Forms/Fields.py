@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.9 2007/06/07 16:23:04 corva Exp $
+# $Id: Fields.py,v 1.10 2007/06/09 13:54:18 olga_sorokina Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -125,7 +125,7 @@ class ScalarField(Field):
         else:
             if isinstance(obj, (list, tuple)):
                 self.converter = Converters.Chain(
-                    [self._conv_instance(i) for i in obj])
+                    *[self._conv_instance(i) for i in obj])
             else:
                 self.converter = self._conv_instance(obj) or self.converter
         Field.__init__(self, *args, **kwargs)
@@ -151,6 +151,11 @@ class Schema(Field):
     subfields = [] # List of name-type pairs
     dictClass = dict
 
+    def copy(self):
+        """Returns copy of itself, actually copies only subfields list"""
+        return self.__class__(subfields=self.subfields[:],
+                              dictClass=self.dictClass)
+    
     def getDefault(self, context):
         value = context.value  # XXX otherwise references to other fields won't
                                # work
