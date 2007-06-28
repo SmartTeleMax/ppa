@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.13 2007/06/28 08:08:28 ods Exp $
+# $Id: Fields.py,v 1.14 2007/06/28 08:50:10 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -268,6 +268,10 @@ class AbstractChoiceField(ScalarField):
         options, False otherwise"""
         raise NotImplementedError()
 
+    def getOptionLabel(self, context, option):
+        """Returns label for the option"""
+        raise NotImplementedError()
+
     def fromForm(self, context):
         form_value = context.state.form_content[context.nameInForm]
         value, error = self.converter.fromForm(context, form_value)
@@ -282,7 +286,8 @@ class AbstractChoiceField(ScalarField):
                          template_selector, global_namespace={}):
         ns = Field.prepareNamespace(self, context,
                                     template_selector, global_namespace)
-        return dict(ns, options=self.getOptions(context))
+        label = self.getOptionLabel(context, ns['content'][context.nameInForm])
+        return dict(ns, options=self.getOptions(context), label=label)
     
 
 class ListChoice(AbstractChoiceField):
@@ -299,6 +304,9 @@ class ListChoice(AbstractChoiceField):
 
     def hasOption(self, context, option):
         return dict(self.options).has_key(option)
+
+    def getOptionLabel(self, context, option):
+        return dict(self.options).get(option, self.noneLabel)
 
 
 class AbstractMultipleChoiceField(AbstractChoiceField): # this shouldn't be, MultipleChoice is no Scalar
