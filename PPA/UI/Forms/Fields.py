@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.10 2007/06/09 13:54:18 olga_sorokina Exp $
+# $Id: Fields.py,v 1.11 2007/06/27 23:38:09 corva Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -8,7 +8,9 @@ logger = logging.getLogger(__name__)
 
 class Field(object):
 
-    typeName = None
+    typeName = None # Never assign other value to this attribute in class that
+                    # can be used as base, since this will break template
+                    # search algorithm.
     default = ''
     requisitesFillers = []
     eventHandlers = []
@@ -255,7 +257,6 @@ class AbstractChoiceField(ScalarField):
     noneSelectedError = 'Nothing is selected'
     allowNone = True
     default = None
-    typeName = "Choice"
     
     def getOptions(self, context):
         """Returns iterable of tuples (id, label)"""
@@ -301,7 +302,6 @@ class ListChoice(AbstractChoiceField):
 
 class AbstractMultipleChoiceField(AbstractChoiceField): # this shouldn't be, MultipleChoice is no Scalar
     default = []
-    typeName = "MultipleChoice"
 
     def fetch(self, context, form):
         context.state.form_content[context.nameInForm] = \
