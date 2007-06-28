@@ -175,7 +175,7 @@ class DateTime(Converter):
             dtTuple = time.strptime(value, ft.format)
         except ValueError:
             return None, ft.parseError
-        return datetime.datetime(*dtTuple[:6])
+        return datetime.datetime(*dtTuple[:6]), None
 
     def toForm(self, context, value):
         if value is not None:
