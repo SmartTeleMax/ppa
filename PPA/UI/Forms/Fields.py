@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.11 2007/06/27 23:38:09 corva Exp $
+# $Id: Fields.py,v 1.12 2007/06/28 07:28:02 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -257,6 +257,7 @@ class AbstractChoiceField(ScalarField):
     noneSelectedError = 'Nothing is selected'
     allowNone = True
     default = None
+    noneLabel = '-'
     
     def getOptions(self, context):
         """Returns iterable of tuples (id, label)"""
@@ -493,7 +494,7 @@ class Container(Field):
         raise RuntimeError
 
     def accept(self, context, form):
-        if not context.value.has_key(field_name):
+        if not context.value.has_key(context.name):
             new_context = context.branch(self.schema)
             context.value.update(self.getDefault(new_context))
         new_context = context.branch(self.schema, context.scalar)
