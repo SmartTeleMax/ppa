@@ -164,6 +164,26 @@ class Number(Converter):
                 return None, self.rangeError
 
 
+class DateTime(Converter):
+
+    def fromForm(self, context, value):
+        ft = context.fieldType
+        if not value and ft.allowNone:
+            return None, None
+        import time, datetime
+        try:
+            dtTuple = time.strptime(value, ft.format)
+        except ValueError:
+            return None, ft.parseError
+        return datetime.datetime(*dtTuple[:6])
+
+    def toForm(self, context, value):
+        if value is not None:
+            return value.strftime(context.fieldType.format)
+        else:
+            return ''
+
+
 try:
     import stripogram
 except ImportError:

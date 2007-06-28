@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.14 2007/06/28 08:50:10 ods Exp $
+# $Id: Fields.py,v 1.15 2007/06/28 09:25:02 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -241,11 +241,20 @@ class Integer(ScalarField):
 
 
 class Boolean(Field):
-    """Represents boolean fields, cobverted value is bool"""
+    """Represents boolean fields, converted value is bool"""
     
     def fromForm(self, context):
         form_value = context.state.form_content[context.nameInForm]
         return {context.name: bool(form_value)}, {}
+
+
+class DateTime(ScalarField):
+
+    format = '%Y-%m-%d'
+    parseError = u'Wrong date'
+    converter = Converters.DateTime()
+    allowNone = True
+    default = None
 
 
 class AbstractChoiceField(ScalarField):
