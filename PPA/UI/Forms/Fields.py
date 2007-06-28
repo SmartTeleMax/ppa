@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.12 2007/06/28 07:28:02 ods Exp $
+# $Id: Fields.py,v 1.13 2007/06/28 08:08:28 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -501,7 +501,7 @@ class Container(Field):
         if not new_context.acFilter.accept:
             return {}, {}
         value, errors = self.schema.accept(new_context, form)
-        return {field_name: value}, errors
+        return {context.name: value}, errors
 
     def handleEvent(self, context, event, actions,
                     template_selector, global_namespace):
