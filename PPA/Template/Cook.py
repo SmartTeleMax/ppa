@@ -1,4 +1,4 @@
-# $Id: Cook.py,v 1.2 2004/04/19 07:48:21 corva Exp $
+# $Id: Cook.py,v 1.3 2005/10/29 21:39:37 corva Exp $
 
 from __future__ import generators
 import re
@@ -33,7 +33,9 @@ def quoteFormField(text):
 
 def quoteJS(text):
     text = text.replace('\r\n', '\\n');
-    text = text.replace('\'', '&#39;')
+    text = text.replace('\n', '\\n');
+    text = text.replace("'", '&#39;')
+    text = text.replace('"', '&#34;')
     return text
     
 
