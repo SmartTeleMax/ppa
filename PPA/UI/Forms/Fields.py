@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.15 2007/06/28 09:25:02 ods Exp $
+# $Id: Fields.py,v 1.16 2007/06/28 12:02:56 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -206,10 +206,9 @@ class Schema(Field):
                     subfield_type.accept(subcontext, form)
                 value.update(subfield_value)
                 errors.update(subfield_errors)
-            else:
+            elif subcontext.acFilter.renderClass is not None:
                 context.state.form_content.update(
                     subfield_type.toForm(subcontext))
-
         return value, errors
 
     def handleEvent(self, context, event, actions,
