@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.11 2007/06/05 15:20:24 corva Exp $
+# $Id: Form.py,v 1.12 2007/06/07 16:23:46 corva Exp $
 
 __all__ = ['UIForm']
 
@@ -159,6 +159,8 @@ class UIForm:
     #   filter          - access control filter (BaseACFilter() is default)
     #   params          - dictionary of parameters to pass to fields
     #                     (application dependent)
+    #   prefix          - fields prefix to distinguish UIForm-s bundled into
+    #                     single <form> tag
     # for internal use:
     #   errors          - occured errors
     #   form_content    - None # original form params
@@ -171,7 +173,7 @@ class UIForm:
     acFilter = BaseACFilter()
     
     def __init__(self, schema, value=None, filter=None, params={},
-                 errors=None, form_content=None):
+                 errors=None, form_content=None, prefix=''):
         if not isinstance(schema, Schema):
             schema = Schema(subfields=schema)
         self.schema = schema
@@ -180,8 +182,10 @@ class UIForm:
         self.params = params
         self.errors = errors or {}
         self.form_content = form_content or {}
+        self.prefix = prefix
         if value is None:
-            context = FieldContext(self, schema, ac_filter=self.acFilter)
+            context = FieldContext(self, schema, ac_filter=self.acFilter,
+                                   prefix=prefix)
             value = schema.getDefault(context)
         self.value = value
         self.requisites = None
@@ -191,7 +195,7 @@ class UIForm:
         returns dict(content=unicode, requisites=list), where content is
         form rendered to html and requisites is SOMETHING"""
         context = FieldContext(self, self.schema, self.value,
-                               ac_filter=self.acFilter)
+                               ac_filter=self.acFilter, prefix=self.prefix)
         if not self.form_content:
             self.form_content = self.schema.toForm(context)
         self.requisites = self.createRequisites()
@@ -206,7 +210,7 @@ class UIForm:
         initialized something of self.errors, self.form_content, self.content
         """
         context = FieldContext(self, self.schema, self.value,
-                               ac_filter=self.acFilter)
+                               ac_filter=self.acFilter, prefix=self.prefix)
         # XXX Do we need to return form_content and errors or just fill them
         # in-place?
         self.value, self.errors = self.schema.accept(context, form)
