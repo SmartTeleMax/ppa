@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.16 2007/06/28 12:02:56 ods Exp $
+# $Id: Fields.py,v 1.17 2007/08/08 16:03:21 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -292,10 +292,9 @@ class AbstractChoiceField(ScalarField):
 
     def prepareNamespace(self, context,
                          template_selector, global_namespace={}):
-        ns = Field.prepareNamespace(self, context,
-                                    template_selector, global_namespace)
-        label = self.getOptionLabel(context, ns['content'][context.nameInForm])
-        return dict(ns, options=self.getOptions(context), label=label)
+        ns = ScalarField.prepareNamespace(self, context,
+                                          template_selector, global_namespace)
+        return dict(ns, options=self.getOptions(context))
     
 
 class ListChoice(AbstractChoiceField):
