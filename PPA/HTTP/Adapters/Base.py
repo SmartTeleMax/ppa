@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.3 2007/03/26 07:33:40 ods Exp $
+# $Id: Base.py,v 1.4 2007/05/07 15:03:30 corva Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 
@@ -38,6 +38,8 @@ class Headers:
         return self._headers_map.has_key(key)
 
     def add(self, key, value):
+        key = str(key)
+        value = str(value)
         self._headers.append((key, value))
         self._headers_map.setdefault(key.lower(), []).append(value)
 
