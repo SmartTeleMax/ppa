@@ -1,4 +1,4 @@
-# $Id: SourceFinders.py,v 1.5 2006/12/14 13:38:50 ods Exp $
+# $Id: SourceFinders.py,v 1.6 2006/12/15 11:10:24 ods Exp $
 
 from glob import glob
 import os, codecs
@@ -54,7 +54,23 @@ class DummySourceFinder(SourceFinder):
     def find(self, template_name, template_type=None):
         raise TemplateNotFoundError(template_name, template_type, 'cache')
 
-    
+
+class ChainSourceFinder(SourceFinder):
+
+    def __init__(self, *args):
+        self._finders = args
+
+    def find(self, template_name, template_type=None):
+        where = []
+        for finder in self._finders:
+            try:
+                return finder.find(template_name, template_type)
+            except TemplateNotFoundError, exc:
+                where.append(exc.where)
+        raise TemplateNotFoundError(template_name, template_type,
+                                    ', '.join(where))
+
+
 class FileSourceFinder(SourceFinder):
     '''Find source of template by name and type in filesystem directory.
     Must be initialized with list of filesystem directories where to find
