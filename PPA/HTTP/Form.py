@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.9 2007/05/10 13:22:07 ods Exp $
+# $Id: Form.py,v 1.10 2007/06/04 11:27:01 olga_sorokina Exp $
 
 __all__ = ['FormData']
 
@@ -62,8 +62,11 @@ class FormData(object):
         if not isinstance(fields, list):
             fields = [fields]
         return fields
+
+    def keys(self):
+        return self._field_storage.keys()
     
-    def getString(self, key, default=None):
+    def getString(self, key, default=u''):
         '''Like of getfirst, returning unicode object'''
         value = self._field_storage.getfirst(key)
         if value is None:
