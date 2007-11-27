@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-# $Id$
+# $Id: testHTTPForm.py,v 1.1 2004/10/20 15:03:57 ods Exp $
 
 import unittest, sys, os
 
 dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
 sys.path.insert(0, os.path.dirname(dir))
 
-from PPA.HTTP.CGI import Adapter
+from PPA.HTTP.Adapters.CGI import Adapter
 from PPA.HTTP.Form import Form
 from cStringIO import StringIO
 
@@ -19,8 +19,12 @@ class FormTest(unittest.TestCase):
 
     class CGIApp(Adapter):
         def handle(self, request, response):
-            form = Form(request)
-            self.form_dict = form._dict
+            self.form = Form(request)
+        def getFormDict(self):
+            result = {}
+            for name in self.form.keys():
+                result[name] = self.form.getStringList(name)
+            return result
     
     def runCGI(self, method='GET', query_string=None, content_type=None,
                data=''):
@@ -45,7 +49,7 @@ class FormTest(unittest.TestCase):
         for key in environ.keys():
             del os.environ[key]
         os.environ.update(orig_environ)
-        return app.form_dict
+        return app.getFormDict()
     
     def testGET(self):
         self.assertEqual(self.runCGI(query_string='a=1&b=2'),

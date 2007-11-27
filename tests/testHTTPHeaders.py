@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-# $Id: testHTTPHeaders.py,v 1.3 2004/04/12 10:00:16 ods Exp $
+# $Id: testHTTPHeaders.py,v 1.4 2004/10/20 15:02:43 ods Exp $
 
 import unittest, sys, os
 
 dir = os.path.dirname(os.path.abspath(globals().get('__file__', sys.argv[0])))
 sys.path.insert(0, os.path.dirname(dir))
 
-from PPA.HTTP.Base import Headers
+from PPA.HTTP.Adapters.Base import Headers
 
 class HeadersTest(unittest.TestCase):
 
