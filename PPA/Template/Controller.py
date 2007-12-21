@@ -1,4 +1,4 @@
-# $Id: Controller.py,v 1.7 2006/12/21 15:55:41 corva Exp $
+# $Id: Controller.py,v 1.8 2006/12/22 08:25:08 ods Exp $
 
 import sys, os
 from Caches import NotCached, MemoryCache
@@ -26,13 +26,12 @@ class _Writer:
 class TemplateWrapper:
     '''Wraps template in handy object.'''
 
-    def __init__(self, name, type, engine, program, compile_deps,
-                 create_interpret_dep_reg):
+    def __init__(self, name, type, engine, program, get_template):
         self.name = name
         self.type = type
         self._engine = engine
         self._program = program
-        self._create_interpret_dep_reg = create_interpret_dep_reg
+        self._get_template = get_template
 
     def getProgram(self):
         return self._program
@@ -40,15 +39,13 @@ class TemplateWrapper:
     def interpret(self, fp=sys.stdout, globals=None, locals=None,
                   _recursion_limit=TEMPLATE_RECURSION_LIMIT):
         # _recursion_limit is for internal use only
-        interpret_dep_reg = self._create_interpret_dep_reg(_recursion_limit-1)
         try:
             self._engine.interpret(self._program, fp,
                                    globals or {}, locals or {},
-                                   interpret_dep_reg.getTemplate)
+                                   self._get_template)
         except TemplateRecursionLimitExceeded, exc:
             raise TemplateRecursionLimitExceeded(
                             [(self.name, self.type)]+exc.stack)
-        return interpret_dep_reg.getDependencies()
 
     def toFile(self, fp, globals=None, locals=None):
         '''Renders template into file-like object.'''
@@ -59,23 +56,6 @@ class TemplateWrapper:
         fp = _Writer()
         self.toFile(fp, globals, locals)
         return fp.getvalue()
-
-
-class TemplateDependencyRegistrar:
-    '''Register dependecies'''
-
-    def __init__(self, get_template, _recursion_limit):
-        self._get_template = get_template
-        self._recursion_limit = _recursion_limit
-        self._dependencies = set()
-
-    def getTemplate(self, name, type=None):
-        template = self._get_template(name, type, self._recursion_limit)
-        self._dependencies.add((name, template.type))
-        return template
-
-    def getDependencies(self):
-        return self._dependencies
 
 
 class TemplateRecursionLimitExceeded(Exception):
@@ -92,9 +72,7 @@ class TemplateController:
     template source finder.'''
 
     def __init__(self, source_finder=None, engine_importer=None,
-                 template_cache=None, template_wrapper_class=TemplateWrapper,
-                 compile_dep_reg_class=TemplateDependencyRegistrar,
-                 interpret_dep_reg_class=TemplateDependencyRegistrar):
+                 template_cache=None, template_wrapper_class=TemplateWrapper):
         if source_finder is None:
             from SourceFinders import DummySourceFinder
             source_finder = DummySourceFinder()
@@ -108,28 +86,15 @@ class TemplateController:
         self._template_cache = template_cache
         self._engine_cache = {}
         self._template_wrapper_class = template_wrapper_class
-        self._compile_dep_reg_class = compile_dep_reg_class
-        self._interpret_dep_reg_class = interpret_dep_reg_class
-
-    def _create_interpret_dep_reg(self, _recursion_limit):
-        return self._interpret_dep_reg_class(self.getTemplate,
-                                             _recursion_limit)
 
     def _compile(self, engine, compile, source, name, type,
                  _recursion_limit=TEMPLATE_RECURSION_LIMIT):
-        # creating registrar for compile dependencies
-        compile_dep_reg = self._compile_dep_reg_class(self.getTemplate,
-                                                _recursion_limit-1)
         try:
-            program = compile(source, name, compile_dep_reg.getTemplate)
+            program = compile(source, name, self.getTemplate)
         except TemplateRecursionLimitExceeded, exc:
             raise TemplateRecursionLimitExceeded([(name, type)]+exc.stack)
-        # now compile_dep_reg already catched all compile dependencies
-        compile_deps = compile_dep_reg.getDependencies()
-
         return self._template_wrapper_class(name, type, engine, program,
-                                            compile_deps,
-                                            self._create_interpret_dep_reg)
+                                            self.getTemplate)
 
     def typeFromName(self, name):
         ext = os.path.splitext(name)[1]
