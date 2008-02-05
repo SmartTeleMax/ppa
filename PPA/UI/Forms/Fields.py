@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.18 2007/09/21 10:38:58 ods Exp $
+# $Id: Fields.py,v 1.19 2007/10/02 16:03:42 olga_sorokina Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -249,9 +249,18 @@ class Boolean(Field):
 
 class DateTime(ScalarField):
 
+    format = '%Y-%m-%d %H:%M:%S'
+    parseError = u'Wrong date/time'
+    converter = Converters.DateTime()
+    allowNone = True
+    default = None
+
+
+class Date(ScalarField):
+
     format = '%Y-%m-%d'
     parseError = u'Wrong date'
-    converter = Converters.DateTime()
+    converter = Converters.Date()
     allowNone = True
     default = None
 

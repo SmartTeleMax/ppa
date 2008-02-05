@@ -164,24 +164,41 @@ class Number(Converter):
                 return None, self.rangeError
 
 
-class DateTime(Converter):
+class DateTimeBase(Converter):
+
+    def _construct(self, dtTuple):
+        raise NotImplementedError
 
     def fromForm(self, context, value):
         ft = context.fieldType
         if not value and ft.allowNone:
             return None, None
-        import time, datetime
+        import time
         try:
             dtTuple = time.strptime(value, ft.format)
         except ValueError:
             return None, ft.parseError
-        return datetime.datetime(*dtTuple[:6]), None
+        return self._construct(dtTuple), None
 
     def toForm(self, context, value):
         if value is not None:
             return value.strftime(context.fieldType.format)
         else:
             return ''
+
+
+class DateTime(DateTimeBase):
+
+    def _construct(self, dtTuple):
+        import datetime
+        return datetime.datetime(*dtTuple[:6])
+
+
+class Date(DateTimeBase):
+
+    def _construct(self, dtTuple):
+        import datetime
+        return datetime.date(*dtTuple[:3])
 
 
 try:
