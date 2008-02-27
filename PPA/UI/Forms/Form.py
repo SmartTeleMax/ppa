@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.12 2007/06/07 16:23:46 corva Exp $
+# $Id: Form.py,v 1.13 2007/08/08 16:09:02 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -38,7 +38,7 @@ class FieldTemplateSelector:
             if cache.has_key((type_name, render_class)):
                 template = cache[type_name, render_class]
                 break
-            to_cache.append((type_name, render_class))
+            to_cache.append((cls, type_name, render_class))
             try:
                 template = self._get_template(
                                 self.getTemplateName(type_name, render_class))
@@ -49,8 +49,12 @@ class FieldTemplateSelector:
                 break
         else:
             raise first_exc
-        for type_name, render_class in to_cache:
-            cache[type_name, render_class] = template
+        template_for_cls = cls
+        for cls, type_name, render_class in to_cache:
+            # This check is for cases when multiple inheritance is used: we
+            # have to insure found template should be used for this class.
+            if issubclass(cls, template_for_cls):
+                cache[type_name, render_class] = template
         return template
 
 
