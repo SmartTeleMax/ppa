@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.19 2007/10/02 16:03:42 olga_sorokina Exp $
+# $Id: Fields.py,v 1.20 2008/02/05 14:29:51 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -372,6 +372,9 @@ class ListMultipleChoice(AbstractMultipleChoiceField):
 
     def hasOption(self, context, option):
         return dict(self.options).has_key(option)
+
+    def getOptionLabel(self, context, option):
+        return dict(self.options).get(option, '')
     
 
 class Password(ScalarField):
