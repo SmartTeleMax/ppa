@@ -1,4 +1,4 @@
-# $Id: WSGI.py,v 1.3 2006/10/18 12:38:56 corva Exp $
+# $Id: WSGI.py,v 1.1 2006/11/21 17:09:44 corva Exp $
 
 '''Adapter for use in WSGI (Python Web Server Gateway Interface) servers.
 See http://www.python.org/dev/peps/pep-0333/ for more information about WSGI.
@@ -18,23 +18,23 @@ class Request(CGI.Request):
 
 class WSGIFileObject:
     def write(self, *args, **kwargs):
-	raise RuntimeError('WSGI start_response was not called yet')
+        raise RuntimeError('WSGI start_response was not called yet')
 
 
 class Response(CGI.Response):
     def __init__(self, request, start_response, buffered=1):
-	self._start_response = start_response
-	CGI.Response.__init__(self, request, WSGIFileObject(), buffered)
+        self._start_response = start_response
+        CGI.Response.__init__(self, request, WSGIFileObject(), buffered)
 
     def _write_status(self):
-	# All work is done by _write_headers
-	pass
+        # All work is done by _write_headers
+        pass
 
     def _write_headers(self):
-	status = "%d %s" % (self._status,
+        status = "%d %s" % (self._status,
                             self.statusCodes.get(self._status, 'Unknown'))
-	self._fp.write = self._start_response(status, self.headers._headers)
-	
+        self._fp.write = self._start_response(status, self.headers._headers)
+
 
 class Adapter(Base.Adapter):
     """WSGI adapter handles abstraction for WSGI protocol. __call__ method
@@ -56,6 +56,6 @@ class Adapter(Base.Adapter):
 
     def __call__(self, environ, start_response):
         request = Request(environ, environ['wsgi.input'])
-        response = Response(request, start_response, buffered=1)	        
+        response = Response(request, start_response, buffered=1)
         Base.Adapter.__call__(self, request, response)
-	return []
+        return []

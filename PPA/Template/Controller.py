@@ -1,4 +1,4 @@
-# $Id: Controller.py,v 1.8 2006/12/22 08:25:08 ods Exp $
+# $Id: Controller.py,v 1.9 2007/12/21 15:17:19 ods Exp $
 
 import sys, os
 from Caches import NotCached, MemoryCache
@@ -16,11 +16,11 @@ class _Writer:
     # get proper traceback.
     
     def __init__(self):
-	self.parts = []
-	self.write = self.parts.append
+        self.parts = []
+        self.write = self.parts.append
     
     def getvalue(self):
-	return ''.join(self.parts)
+        return ''.join(self.parts)
 
 
 class TemplateWrapper:
