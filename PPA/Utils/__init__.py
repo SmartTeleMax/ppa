@@ -1,12 +1,8 @@
-# $Id: __init__.py,v 1.1 2006/06/30 13:51:59 ods Exp $
+# $Id: __init__.py,v 1.2 2007/04/03 16:08:42 ods Exp $
 
 '''General utils'''
 
 __all__ = []
-
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class CachedAttribute(object):
@@ -18,14 +14,8 @@ class CachedAttribute(object):
     def __get__(self, inst, cls):
         if inst is None:
             return self
-        try:
-            result = self.method(inst)
-            setattr(inst, self.name, result)
-        except:
-            # XXX It's a bug in Python 2.2: any exception is replaced with
-            # AttributeError
-            logger.exception('Error in CachedAttribute:')
-            raise
+        result = self.method(inst)
+        setattr(inst, self.name, result)
         return result
 
 
@@ -36,14 +26,8 @@ class CachedClassAttribute(object):
         self.name = name or method.__name__
 
     def __get__(self, inst, cls):
-        try:
-            result = self.method(cls)
-            setattr(cls, self.name, result)
-        except:
-            # XXX It's a bug in Python 2.2: any exception is replaced with
-            # AttributeError
-            logger.exception('Error in CachedClassAttribute:')
-            raise
+        result = self.method(cls)
+        setattr(cls, self.name, result)
         return result
 
 
