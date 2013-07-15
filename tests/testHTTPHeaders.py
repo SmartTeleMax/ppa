@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: testHTTPHeaders.py,v 1.4 2004/10/20 15:02:43 ods Exp $
+# $Id: testHTTPHeaders.py,v 1.5 2007/11/27 13:15:38 ods Exp $
 
 import unittest, sys, os
 
@@ -14,7 +14,7 @@ class HeadersTest(unittest.TestCase):
         self.assertEqual(len(seq1), len(seq2))
         for item in seq1:
             self.failUnless(item in seq2)
-    
+
     def testInitStr(self):
         '''Headers.__init__, Headers.__str__'''
         h = Headers({'key': 'value'})

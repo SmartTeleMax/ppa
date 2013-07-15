@@ -1,4 +1,4 @@
-# $Id$
+# $Id: VarList.py,v 1.1 2007/05/16 14:10:58 ods Exp $
 # XXX The module is not adapted to the new interface yet
 
 from Fields import Field, String
@@ -151,7 +151,7 @@ class VarList(Field):
     allowDelete = True
     allowInsert = True
     allowAppend = True
-    
+
     def itemFieldName(self, field_name, index):
         return '%s-%d' % (field_name, index)
 

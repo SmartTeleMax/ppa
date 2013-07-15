@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# $Id: testTemplate.py,v 1.6 2005/03/19 09:53:59 ods Exp $
+# $Id: testTemplate.py,v 1.7 2006/12/15 11:13:17 ods Exp $
 
 import unittest, sys, os, codecs
 from glob import glob
@@ -29,7 +29,7 @@ class TemplateTestCase(unittest.TestCase):
         self.locals = locals
         self.templates_path = templates_path
         self.results_path = results_path
-    
+
     def runTest(self):
         source_finder = FileSourceFinder([self.templates_path])
         controller = TemplateController(source_finder=source_finder)
@@ -93,7 +93,7 @@ _list_of_tests = [
                                   'var': 'local'}),
     ('test6',  'raw',   None,    {}, {}),
     ('test6',  None,    None,    {}, {}),
-    ('test7',  'pysi',  None,    {'var': 'global'}, 
+    ('test7',  'pysi',  None,    {'var': 'global'},
                                  {'title': 'Just a title',
                                   'body': ['para1', 'para2', 'para3'],
                                   'max_paras': 2, 'var': 'local'}),

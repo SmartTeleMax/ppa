@@ -1,4 +1,4 @@
-# $Id: Cook.py,v 1.5 2007/06/29 05:38:50 ods Exp $
+# $Id: Cook.py,v 1.6 2007/06/29 05:43:49 ods Exp $
 
 from __future__ import generators
 import re
@@ -37,7 +37,7 @@ def quoteJS(text):
     for char in '\'"<>&':
         text = text.replace(char, '\\x%2x' % ord(char))
     return text
-    
+
 
 class Repeat:
 

@@ -1,4 +1,4 @@
-# $Id: SourceFinders.py,v 1.6 2006/12/15 11:10:24 ods Exp $
+# $Id: SourceFinders.py,v 1.7 2007/11/27 12:39:17 ods Exp $
 
 from glob import glob
 import os, codecs
@@ -20,7 +20,7 @@ class TemplateNotFoundError(Exception):
 
 class TemplateDirectory(str):
     '''Incapsulates directory name and charset of files within it'''
-    
+
     def __new__(cls, directory, charset=None):
         inst = str.__new__(cls, directory)
         inst.charset = charset
@@ -32,7 +32,7 @@ class TemplateDirectory(str):
             return codecs.getreader(self.charset)(fp)
         else:
             return fp
-        
+
 
 class SourceFinder:
     """Template finder. Usage is:
@@ -41,7 +41,7 @@ class SourceFinder:
     fp, template_type = finder.find("templatename")
     fp, template_type = finder.find("templatename", "pyem")
     """
-    
+
     def find(self, template_name, template_type=None):
         """Returns tuple (fp, template_type), where fp is file object
         of template body"""
@@ -90,7 +90,7 @@ class FileSourceFinder(SourceFinder):
         if engines_by_type is None:
             from Engines import enginesByType as engines_by_type
         self._engines_by_type = engines_by_type
-    
+
     def find(self, template_name, template_type=None):
         if template_type is None:
             pathern = template_name+'.*'

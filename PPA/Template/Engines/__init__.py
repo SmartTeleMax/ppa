@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.2 2006/10/24 07:03:36 ods Exp $
+# $Id: __init__.py,v 1.3 2006/12/14 13:41:57 ods Exp $
 
 __all__ = ['enginesByType', 'UnknownTemplateType', 'EngineImporter']
 
@@ -14,7 +14,7 @@ class EngineImporter:
     def __init__(self, engines_by_type=enginesByType):
         self._engines_by_type = engines_by_type
         self._cache = {}
-    
+
     def __call__(self, template_type):
         '''Return module of engine by its type'''
         if not self._cache.has_key(template_type):

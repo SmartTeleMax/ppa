@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: testHTTPForm.py,v 1.1 2004/10/20 15:03:57 ods Exp $
+# $Id: testHTTPForm.py,v 1.2 2007/11/27 13:15:38 ods Exp $
 
 import unittest, sys, os
 
@@ -25,7 +25,7 @@ class FormTest(unittest.TestCase):
             for name in self.form.keys():
                 result[name] = self.form.getStringList(name)
             return result
-    
+
     def runCGI(self, method='GET', query_string=None, content_type=None,
                data=''):
         environ = {
@@ -50,7 +50,7 @@ class FormTest(unittest.TestCase):
             del os.environ[key]
         os.environ.update(orig_environ)
         return app.getFormDict()
-    
+
     def testGET(self):
         self.assertEqual(self.runCGI(query_string='a=1&b=2'),
                          {'a': ['1'], 'b': ['2']})

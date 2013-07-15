@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.13 2007/08/08 16:09:02 ods Exp $
+# $Id: Form.py,v 1.14 2008/02/27 17:41:37 ods Exp $
 
 __all__ = ['UIForm']
 
@@ -60,7 +60,7 @@ class FieldTemplateSelector:
 
 class BaseACFilter:
     '''Access control filter.
-    
+
     renderClass - either None (dont show) or string with render class
     accept      - True if field have to be accepted from form
     '''
@@ -70,7 +70,7 @@ class BaseACFilter:
     @ property
     def accept(self):
         return bool(self.renderClass == 'edit')
-    
+
     def __init__(self, render_class='edit'):
         self.renderClass = render_class
 
@@ -175,7 +175,7 @@ class UIForm:
 
     templateSelectorClass = FieldTemplateSelector
     acFilter = BaseACFilter()
-    
+
     def __init__(self, schema, value=None, filter=None, params={},
                  errors=None, form_content=None, prefix=''):
         if not isinstance(schema, Schema):

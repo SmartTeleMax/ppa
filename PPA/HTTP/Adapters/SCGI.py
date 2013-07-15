@@ -1,4 +1,4 @@
-# $Id: SCGI.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: SCGI.py,v 1.1 2006/11/21 17:09:44 corva Exp $
 
 from CGI import Headers, Request, Response
 import Base
@@ -29,7 +29,7 @@ class Adapter(Base.Adapter):
     port = 4000
     max_children = 5
     base_path = ''
-    
+
     def __init__(self):
         server = scgi_server.SCGIServer(handler_class=self.__handler_class,
                                         host=self.host, port=self.port,

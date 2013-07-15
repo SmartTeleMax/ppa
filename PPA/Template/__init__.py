@@ -1,4 +1,4 @@
-# $Id: __init__.py,v 1.8 2006/12/14 16:33:42 ods Exp $
+# $Id: __init__.py,v 1.9 2006/12/19 09:39:27 ods Exp $
 
 """PPA.Template - templating support in PPA.
 
@@ -23,7 +23,7 @@ Simple usage:
 
     template = Template.fromString('<h1><%= title %></h1>', type='pyem')
     result = template.toString({'title': 'Python rulez!'})
-    
+
     template = Template.fromFile('template.pyem')
     template.toFile(sys.stdout, {'title': 'Python rulez!'})
 

@@ -1,4 +1,4 @@
-# $Id: WSGI.py,v 1.1 2006/11/21 17:09:44 corva Exp $
+# $Id: WSGI.py,v 1.2 2008/06/06 11:51:48 ods Exp $
 
 '''Adapter for use in WSGI (Python Web Server Gateway Interface) servers.
 See http://www.python.org/dev/peps/pep-0333/ for more information about WSGI.
@@ -52,7 +52,7 @@ class Adapter(Base.Adapter):
     from flup.server.fcgi_fork import WSGIServer
     WSGIServer(wsgi_app).run()
     """
-    
+
 
     def __call__(self, environ, start_response):
         request = Request(environ, environ['wsgi.input'])

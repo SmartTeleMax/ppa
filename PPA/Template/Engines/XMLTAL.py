@@ -1,4 +1,4 @@
-# $Id: XMLTAL.py,v 1.2 2004/04/12 09:40:52 ods Exp $
+# $Id: XMLTAL.py,v 1.3 2004/04/12 10:02:38 ods Exp $
 
 import _TALCommon
 from TAL.TALParser import TALParser
@@ -27,7 +27,7 @@ class Engine(_TALCommon.Engine):
             self.nsStack = []
             self.nsDict = {XML_NS: 'xml'}
             self.nsNew = []
-    
+
     def compileString(self, source, template_name, get_template):
         cengine = _TALCommon.Compiler()
         generator = TALGenerator(cengine, self._xml)

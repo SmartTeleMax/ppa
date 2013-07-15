@@ -1,4 +1,4 @@
-# $Id: CGI.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: CGI.py,v 1.1 2006/11/21 17:09:44 corva Exp $
 
 import Base
 
@@ -45,10 +45,10 @@ class Request(Base.Request):
 
     def protocol(self):
         return self._environ['SERVER_PROTOCOL']
-        
+
     def method(self):
         return self._environ['REQUEST_METHOD'].upper()
-    
+
     def uri(self):
         if self._environ.has_key('REQUEST_URI'):
             # This variable is not part of CGI/1.1 standard (available in

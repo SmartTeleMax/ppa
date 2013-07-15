@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: testPythonEmbedded.py,v 1.2 2004/04/09 15:48:36 ods Exp $
+# $Id: testPythonEmbedded.py,v 1.3 2004/04/12 10:00:16 ods Exp $
 
 import unittest, sys, os
 
@@ -13,7 +13,7 @@ class PyEmParserTestCase(unittest.TestCase):
 
     def _parse(self, s):
         return Parser(s).process()
-    
+
     def testRawHTML(self):
         '''Parsing raw HTML'''
         raw_html = '''\

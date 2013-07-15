@@ -19,7 +19,7 @@ class HTMLElementAttributes(object):
 
 class HTMLElement:
     """Base class for all html elements"""
-    
+
     elementAttributes = HTMLElementAttributes()
 
 

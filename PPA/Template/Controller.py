@@ -1,4 +1,4 @@
-# $Id: Controller.py,v 1.9 2007/12/21 15:17:19 ods Exp $
+# $Id: Controller.py,v 1.10 2008/06/06 11:51:48 ods Exp $
 
 import sys, os
 from Caches import NotCached, MemoryCache
@@ -14,11 +14,11 @@ class _Writer:
     # UnicodeError source: in case of mixed str/unicode chunks we get an error
     # only when getvalue() is called, while it should be raised in write() to
     # get proper traceback.
-    
+
     def __init__(self):
         self.parts = []
         self.write = self.parts.append
-    
+
     def getvalue(self):
         return ''.join(self.parts)
 

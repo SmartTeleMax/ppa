@@ -10,15 +10,15 @@ class Converter:
     def fromForm(self, context, value):
         """Returns value, None if convertation was successful, or None, error
         if there was error"""
-        
+
         return value, None
 
     def toForm(self, context, value):
         """Returns value converted for form"""
-        
+
         return value
 
-    
+
 class Chain(Converter):
     """Chain converter, accepts converters as arguments and chains thru them.
 
@@ -28,13 +28,13 @@ class Chain(Converter):
 
     fromForm chains in direct order,
     toForm in reverse order"""
-    
+
     chain = []
 
     def __init__(self, *args, **kwargs):
         self.chain = args
         Converter.__init__(self, **kwargs)
-    
+
     def fromForm(self, context, value):
         for converter in self.chain:
             value, error = converter.fromForm(context, value)
@@ -59,7 +59,7 @@ class Length(Converter):
     min = 0
     max = 255
     error = 'Length error'
-    
+
     def fromForm(self, context, value):
         if self.min<=len(value)<=self.max:
             return value, None
@@ -73,7 +73,7 @@ class NotNull(Converter):
     error - message to raise if value is false"""
 
     error = 'This field cant be empty'
-    
+
     def fromForm(self, context, value):
         if value:
             return value, None
@@ -83,7 +83,7 @@ class NotNull(Converter):
 
 class Strip(Converter):
     """Returns stripped string, no errors are raised"""
-    
+
     def fromForm(self, context, value):
         return value.strip(), None
 
@@ -93,7 +93,7 @@ class Pattern(Converter):
 
     pattern - regexp pattern used to check a string
     error - error raised if string doesn't match pattern"""
-    
+
     pattern = None
     error = "String doesn't match pattern"
 
@@ -112,7 +112,7 @@ class Pattern(Converter):
 
 class Email(Pattern):
     """Subclass of Pattern, checks if string is a valid email address"""
-    
+
     pattern = "^.+\@.+$"
     error = "This is not email"
 

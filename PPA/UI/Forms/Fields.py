@@ -1,4 +1,4 @@
-# $Id: Fields.py,v 1.20 2008/02/05 14:29:51 ods Exp $
+# $Id: Fields.py,v 1.21 2008/03/03 09:15:17 ods Exp $
 
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
@@ -33,7 +33,7 @@ class Field(object):
 
     def fromCode(self, value, params):
         return value
-    
+
     def getDefault(self, context):
         return {context.name: self.fromCode(self.default,
                                             context.state.params)}
@@ -111,7 +111,7 @@ class ScalarField(Field):
 
     ScalarField(converter=[NotNull, Strip, Pattern('^http://.*')])
     """
-    
+
     converter = Converters.Converter()
 
     def _conv_instance(self, obj):
@@ -131,7 +131,7 @@ class ScalarField(Field):
             else:
                 self.converter = self._conv_instance(obj) or self.converter
         Field.__init__(self, *args, **kwargs)
-    
+
     def fromForm(self, context):
         form_value = context.state.form_content[context.nameInForm]
         value, error = self.converter.fromForm(context, form_value)
@@ -157,7 +157,7 @@ class Schema(Field):
         """Returns copy of itself, actually copies only subfields list"""
         return self.__class__(subfields=self.subfields[:],
                               dictClass=self.dictClass)
-    
+
     def getDefault(self, context):
         value = context.value  # XXX otherwise references to other fields won't
                                # work
@@ -226,13 +226,13 @@ class Schema(Field):
 
 class String(ScalarField):
     """Represents string fields, converted value is unicode"""
-    
+
     pass
 
 
 class Integer(ScalarField):
     """Represents integer fields, converted value is controlled by converter"""
-    
+
     allowNone = False
     default = 0
     converter = Converters.Number(type=int, minValue=-sys.maxint-1,
@@ -241,7 +241,7 @@ class Integer(ScalarField):
 
 class Boolean(Field):
     """Represents boolean fields, converted value is bool"""
-    
+
     def fromForm(self, context):
         form_value = context.state.form_content[context.nameInForm]
         return {context.name: bool(form_value)}, {}
@@ -275,7 +275,7 @@ class AbstractChoiceField(ScalarField):
     allowNone = True
     default = None
     noneLabel = '-'
-    
+
     def getOptions(self, context):
         """Returns iterable of tuples (id, label)"""
         raise NotImplementedError()
@@ -305,7 +305,7 @@ class AbstractChoiceField(ScalarField):
                                           template_selector, global_namespace)
         label = self.getOptionLabel(context, ns['content'][context.nameInForm])
         return dict(ns, options=self.getOptions(context), label=label)
-    
+
 
 class ListChoice(AbstractChoiceField):
     """Represents choice between options passed as list of tuples (id, lable):
@@ -332,15 +332,15 @@ class AbstractMultipleChoiceField(AbstractChoiceField): # this shouldn't be, Mul
     def fetch(self, context, form):
         context.state.form_content[context.nameInForm] = \
             form.getStringList(context.nameInForm)
-    
+
     def fromForm(self, context):
         result_value = []
-        
+
         for id in context.state.form_content[context.nameInForm]:
             value, error = self.converter.fromForm(context, id)
             if value and self.hasOption(context, value):
                 result_value.append(value)
-        
+
         if not result_value and not self.allowNone:
             return {}, {context.nameInForm: self.noneSelectedError}
         return {context.name: result_value}, {}
@@ -364,7 +364,7 @@ class AbstractMultipleChoiceField(AbstractChoiceField): # this shouldn't be, Mul
 
 class ListMultipleChoice(AbstractMultipleChoiceField):
     options = []  # List of (id, title) pairs
-    
+
     __required__ = ('options',)
 
     def getOptions(self, context):
@@ -375,7 +375,7 @@ class ListMultipleChoice(AbstractMultipleChoiceField):
 
     def getOptionLabel(self, context, option):
         return dict(self.options).get(option, '')
-    
+
 
 class Password(ScalarField):
     from md5 import new as digest # may be digest class or None
@@ -384,7 +384,7 @@ class Password(ScalarField):
     def accept(self, context, form):
         confirm_context = context.entry(self, context.name+'-confirm')
         old_value = context.value[context.name]
-        
+
         self.fetch(context, form)
         self.fetch(confirm_context, form)
 
@@ -407,7 +407,7 @@ class Password(ScalarField):
         else:
             return {context.name: old_value}, {}
 
-        
+
 class FixedList(Field):
 
     itemField = String()
@@ -582,7 +582,7 @@ class SwitchField(Field):
             return self.optionSpecs[value]
         except KeyError:
             return self.defaultOptionSpec
-    
+
     def getDefault(self, context):
         spec = self.optionSpec(context)
         return spec.getDefault(context)
@@ -650,7 +650,7 @@ class File(Field):
 
         def __nonzero__(self):
             return bool(self.url or self.tmpname)
-        
+
 
     default = _File()
 
@@ -662,7 +662,7 @@ class File(Field):
 
     def accept(self, context, form):
         import os.path
-        
+
         sources = []
         url_context = context.entry(self, context.name+'-url')
         servfile_context = context.entry(self, context.name+'-sid')
@@ -739,7 +739,7 @@ class Image(File):
     height = None
     action = None # 'resize' or 'thumb'
     filter = "ANTIALIAS" # getattr(PIL.Image, filter)
-    
+
     def checkFile(self, context, path, name):
         import PIL.Image, os
         try:
@@ -767,7 +767,7 @@ class Image(File):
         ratio.
 
         Returns tuple (image (PIL.Image|None), error (str|None))"""
-        
+
         import PIL.Image
         filter = getattr(PIL.Image, self.filter)
         orig_image = image
@@ -782,9 +782,9 @@ class Image(File):
         return image, None
 
     def _transform_thumb(self, image):
-        """Thumbnails (resize+crop) image (PIL.Image) 
+        """Thumbnails (resize+crop) image (PIL.Image)
         to self.width, self.height with ratio self.width X self.height.
-        
+
         Returns tuple (image (PIL.Image|None), error (str|None))"""
         w, h = image.size
         if w > self.width or h > self.height:
@@ -796,7 +796,7 @@ class Image(File):
                 return image, None
         else:
             return image, None
-        
+
     def _thumbnail(self, image):
         import PIL.Image
         filter = getattr(PIL.Image, self.filter)

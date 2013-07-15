@@ -1,4 +1,4 @@
-# $Id: _TALCommon.py,v 1.3 2004/04/12 09:38:22 ods Exp $
+# $Id: _TALCommon.py,v 1.4 2004/05/11 14:09:16 ods Exp $
 
 from TAL.TALDefs import TALESError
 from TAL.TALGenerator import TALGenerator
@@ -76,7 +76,7 @@ class Interpreter:
         self.macros = macros
         self.stack = [self.locals]
         self.get_template = get_template
-    
+
     def getTALESError(self):
         return TALESError
 
@@ -110,7 +110,7 @@ class Interpreter:
 
     def evaluate(self, expr):
         return eval(expr, self.globals, self.locals)
-    
+
     evaluateValue = evaluateSequence = evaluate
 
     def evaluateBoolean(self, expr):
@@ -120,7 +120,7 @@ class Interpreter:
             return not not self.evaluate(expr)
         except (NameError, AttributeError):
             return 0
-    
+
     def evaluateText(self, expr):
         expr = self.evaluate(expr)
         if expr is default or expr is None:
@@ -128,7 +128,7 @@ class Interpreter:
         else:
             return '%s' % (expr,)
     evaluateStructure = evaluateText
-    
+
     def evaluateMacro(self, expr):
         expr = self.evaluate(expr)
         if type(expr) in (str, unicode):
@@ -145,14 +145,14 @@ class Engine:
     type = None
     _xml = 1
     _parser_class = None
-    
+
     def compileString(self, source, template_name, get_template):
         cengine = Compiler()
         generator = TALGenerator(cengine, self._xml)
         parser = self._parser_class(generator)
         parser.parseString(source)
         return parser.getCode()
-    
+
     def compileFile(self, fp, template_name, get_template):
         return self.compileString(fp.read(), template_name, get_template)
 

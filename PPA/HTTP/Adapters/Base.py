@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.4 2007/05/07 15:03:30 corva Exp $
+# $Id: Base.py,v 1.5 2007/11/01 13:54:05 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 
@@ -230,7 +230,7 @@ class Adapter:
     of this adapter provide same interface for all supported web-protocols.
 
     There are two ways to use it:
-    
+
     1) Initialize protocol's Adapter with function. This function will be
        called for every HTTP request with two arguments: request and response
        objects.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: testCaches.py,v 1.2 2004/04/09 15:48:36 ods Exp $
+# $Id: testCaches.py,v 1.3 2004/04/12 10:00:16 ods Exp $
 
 import unittest, sys, os
 
@@ -82,7 +82,7 @@ class MemoryCacheTest(unittest.TestCase):
         cache.store(('name', 'type'), template)
         self.assertEqual(cache.retrieve(('name', 'type')), template)
         self.assertEqual(cache.retrieve(('name', None)), template)
-            
+
 
 
 def testSuite():

@@ -57,7 +57,7 @@ class Action:
 
     class Restart(Control):
         pass
-    
+
 
     def __call__(self, condition, request, response):
         raise NotImplementedError()
@@ -94,11 +94,11 @@ class Condition:
 class Prefix(Condition):
     def __init__(self, prefix):
         self._prefix = prefix
-    
+
     def __call__(self, request):
         prefix_len = len(self._prefix)
         prefix = request.pathInfo[:prefix_len]
-        
+
         if prefix == self._prefix:
             path = request.pathInfo[prefix_len:]
             if path == '' or path.startswith('/'):
@@ -108,17 +108,17 @@ class Prefix(Condition):
 
 class Dispatcher:
     max_restarts = 5 # maximum levels of restarts for request processing
-    
+
     def __init__(self, registry=None):
         self.registry = registry or []
-    
+
     def register(self, condition, action):
         self.registry.append((condition, action))
 
     def __call__(self, request, response, level=0):
         if level > self.max_restarts:
             raise RuntimeError('Max level of pass thgroup actions reached')
-        
+
         for condition, action in self.registry:
             if condition(request):
                 try:

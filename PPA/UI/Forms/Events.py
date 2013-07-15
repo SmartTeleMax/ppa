@@ -10,7 +10,7 @@ class Event:
     def __init__(self, id, form):
         self.id = id
         self.form = form
-        
+
 
 class FormEventParser:
 
@@ -42,7 +42,7 @@ class EventHandler:
 class EventGenerator:
     eapiName = "eapi"
     onloadTmpl = """Event.observe('%(field_name)s-control', '%(field_action)s', function () {%(eapi)s.sendEvent('%(event_name)s', %(values)s)});"""
-    
+
     def __init__(self, eventName, eventAction='change', dependencies=[]):
         self.name = eventName
         self.action = eventAction
@@ -54,7 +54,7 @@ class EventGenerator:
         return '[%s]' % ', '.join(
             ["%s.fields.extractValue('%s')" % (self.eapiName, i,) \
              for i in deps])
-        
+
 
     def __call__(self, field_type, field_name, form_content, errors,
                  requisites, context, filter, params):
@@ -95,7 +95,7 @@ class RenderEventHandler(EventHandler):
         content = field_type.render(field_name, form_content, {}, requisites,
                                     context, filter, params,
                                     template_selector, global_namespace)
-        return ['Element.replace("%s-container", %s)' % (field_name, 
+        return ['Element.replace("%s-container", %s)' % (field_name,
                                                          JSString(content))]+\
                requisites.get('onload', [])
 
@@ -126,7 +126,7 @@ class AcceptEventHandler(EventHandler):
                             event.form, field_name, context, filter, params)
         context.value.update(value)
         return []
-    
+
 class EditAcceptEventHandler(AcceptEventHandler, RenderEventHandler):
 
     suffix = 'editAccept'
@@ -252,7 +252,7 @@ class ItemToVarListEventGenerator(EventGenerator):
             onload.append(
                 interpolateString(
                     self.onloadTmpl,
-                    {'node_id': field_name.inForm+'-%s-%s' % 
+                    {'node_id': field_name.inForm+'-%s-%s' %
                                                         (self.suffix, index),
                      'event_name': field_name.inForm+'-%s' % self.suffix,
                      'field_name': field_name.inForm,

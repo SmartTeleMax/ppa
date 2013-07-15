@@ -1,4 +1,4 @@
-# $Id: Caches.py,v 1.2 2003/11/25 12:08:51 ods Exp $
+# $Id: Caches.py,v 1.1.1.1 2004/04/09 13:18:10 ods Exp $
 # TODO: LimitedMemoryCache (limits number of objects in memory), BSDDBCache,
 # NestedCaches (e.g.: NestedCaches(LimitedMemoryCache, BSDDBCache) stores
 # a limited number of templates in memory and all the rest in BSDDB).
@@ -7,7 +7,7 @@
 # we want use 'em in long running custom server or under mod_python.
 # XXX Timestamp control should be in separate class! It's interesting to use
 # nested LimitedMemoryCache without reloading and BSDDBCache (SQLCache?) with
-# reloading. 
+# reloading.
 # XXX We need filename to stat or callback method recieved by controller from
 # source finder.
 # XXX We need reference to Controller (or SourceFinder?) to reload? Or just
