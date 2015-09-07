@@ -1,5 +1,3 @@
-# $Id: SourceFinders.py,v 1.7 2007/11/27 12:39:17 ods Exp $
-
 from glob import glob
 import os, codecs
 

@@ -1,5 +1,3 @@
-# $Id: Base.py,v 1.5 2007/11/01 13:54:05 ods Exp $
-
 '''Define base classes Headers, Request, Response, Adapter'''
 
 import logging

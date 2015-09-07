@@ -1,5 +1,3 @@
-# $Id: __init__.py,v 1.9 2006/12/19 09:39:27 ods Exp $
-
 """PPA.Template - templating support in PPA.
 
 This package defines a set of classes to find, interpret and evaluate templates

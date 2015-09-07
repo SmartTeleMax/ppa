@@ -1,5 +1,3 @@
-# $Id: XMLTAL.py,v 1.3 2004/04/12 10:02:38 ods Exp $
-
 import _TALCommon
 from TAL.TALParser import TALParser
 from TAL.XMLParser import XMLParser

@@ -1,5 +1,3 @@
-# $Id: SCGI.py,v 1.1 2006/11/21 17:09:44 corva Exp $
-
 from CGI import Headers, Request, Response
 import Base
 from scgi import scgi_server

@@ -1,5 +1,3 @@
-# $Id: Inheritance.py,v 1.2 2007/04/03 15:16:39 ods Exp $
-
 """PPA.Template.Inheritance - uses class names in MRO to find suitable template
 """
 

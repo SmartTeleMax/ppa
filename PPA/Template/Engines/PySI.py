@@ -1,5 +1,3 @@
-# $Id: PySI.py,v 1.2 2005/11/17 23:14:12 corva Exp $
-
 '''Python-style string interpolation'''
 
 

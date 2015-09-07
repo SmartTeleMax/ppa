@@ -1,4 +1,3 @@
-# $Id: Caches.py,v 1.1.1.1 2004/04/09 13:18:10 ods Exp $
 # TODO: LimitedMemoryCache (limits number of objects in memory), BSDDBCache,
 # NestedCaches (e.g.: NestedCaches(LimitedMemoryCache, BSDDBCache) stores
 # a limited number of templates in memory and all the rest in BSDDB).

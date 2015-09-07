@@ -1,5 +1,3 @@
-# $Id: Form.py,v 1.14 2008/02/27 17:41:37 ods Exp $
-
 __all__ = ['UIForm']
 
 from Fields import Schema

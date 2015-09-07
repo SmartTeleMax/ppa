@@ -1,5 +1,3 @@
-# $Id: TemplateEnginesCommon.py,v 1.5 2003/11/25 12:08:52 ods Exp $
-
 import unittest, sys
 from cStringIO import StringIO
 

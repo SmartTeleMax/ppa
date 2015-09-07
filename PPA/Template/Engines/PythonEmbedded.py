@@ -1,5 +1,3 @@
-# $Id: PythonEmbedded.py,v 1.8 2005/05/03 09:42:06 corva Exp $
-
 import string, re
 
 single_re = r"'[^\n'\\]*(?:\\.[^\n'\\]*)*'"

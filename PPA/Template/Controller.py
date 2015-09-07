@@ -1,5 +1,3 @@
-# $Id: Controller.py,v 1.10 2008/06/06 11:51:48 ods Exp $
-
 import sys, os
 from Caches import NotCached, MemoryCache
 

@@ -1,5 +1,3 @@
-# $Id: Cook.py,v 1.6 2007/06/29 05:43:49 ods Exp $
-
 from __future__ import generators
 import re
 

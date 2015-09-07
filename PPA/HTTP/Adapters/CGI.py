@@ -1,5 +1,3 @@
-# $Id: CGI.py,v 1.1 2006/11/21 17:09:44 corva Exp $
-
 import Base
 
 class Headers:

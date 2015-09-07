@@ -1,5 +1,3 @@
-# $Id: Form.py,v 1.11 2007/11/27 13:14:35 ods Exp $
-
 __all__ = ['FormData']
 
 import sys, re

@@ -1,5 +1,3 @@
-# $Id: __init__.py,v 1.3 2006/12/14 13:41:57 ods Exp $
-
 __all__ = ['enginesByType', 'UnknownTemplateType', 'EngineImporter']
 
 

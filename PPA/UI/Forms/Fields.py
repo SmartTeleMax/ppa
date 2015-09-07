@@ -1,5 +1,3 @@
-# $Id: Fields.py,v 1.21 2008/03/03 09:15:17 ods Exp $
-
 import sys, logging, inspect, Converters
 from PPA.Utils import interpolateString
 

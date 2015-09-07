@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $Id: run.py,v 1.2 2003/11/25 12:08:52 ods Exp $
 
 from glob import glob
 import os, sys, unittest

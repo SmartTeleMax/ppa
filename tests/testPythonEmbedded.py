@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $Id: testPythonEmbedded.py,v 1.3 2004/04/12 10:00:16 ods Exp $
 
 import unittest, sys, os
 

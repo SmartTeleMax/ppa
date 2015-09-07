@@ -1,5 +1,3 @@
-# $Id: WSGI.py,v 1.2 2008/06/06 11:51:48 ods Exp $
-
 '''Adapter for use in WSGI (Python Web Server Gateway Interface) servers.
 See http://www.python.org/dev/peps/pep-0333/ for more information about WSGI.
 '''

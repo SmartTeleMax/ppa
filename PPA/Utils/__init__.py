@@ -1,5 +1,3 @@
-# $Id: __init__.py,v 1.2 2007/04/03 16:08:42 ods Exp $
-
 '''General utils'''
 
 __all__ = []

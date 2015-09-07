@@ -1,5 +1,3 @@
-# $Id: Raw.py,v 1.2 2003/11/25 12:08:52 ods Exp $
-
 '''The most simple engine around: returns source unchanged'''
 
 

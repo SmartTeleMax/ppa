@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $Id: setup.py,v 1.2 2006/10/18 13:56:00 ods Exp $
 
 from distutils.core import setup
 import PPA, os

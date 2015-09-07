@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# $Id: testHTTPForm.py,v 1.2 2007/11/27 13:15:38 ods Exp $
 
 import unittest, sys, os
 
