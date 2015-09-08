@@ -44,7 +44,7 @@ EventAPI.prototype = {
   _handleSuccess: function(request) {
     eval(request.responseText);
   },
-  
+
   _handleFailure: function() {
     alert('handleFailure');
   }
