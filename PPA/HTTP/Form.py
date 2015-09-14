@@ -1,4 +1,4 @@
-# $Id: Form.py,v 1.3 2006/06/08 07:15:58 ods Exp $
+# $Id: Form.py,v 1.4 2006/06/09 10:16:26 ods Exp $
 
 from weakref import WeakKeyDictionary
 from Errors import ClientError

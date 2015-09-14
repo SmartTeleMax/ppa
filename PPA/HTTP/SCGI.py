@@ -1,4 +1,4 @@
-# $Id: SCGI.py,v 1.2 2003/11/25 12:08:51 ods Exp $
+# $Id: SCGI.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 from CGI import Headers, Request, Response
 import Base

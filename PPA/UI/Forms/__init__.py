@@ -6,10 +6,10 @@ logger = logging.getLogger(__name__)
 
 class QPSItemConverter(Converter):
 
-    def getStream(self, field_type, context, view):
+    def getStream(self, field_type, context, params):
         stream_id = interpolateString(field_type.streamTemplate,
                                       {'context': context})
-        return view.site.retrieveStream(stream_id)
+        return params['site'].retrieveStream(stream_id)
 
     def fromForm(self, field_type, value, context, view):
         if not value and field_type.allowNone:
@@ -38,10 +38,10 @@ class QPSItemReference(ScalarField):
 
 class QPSStreamOptions:
 
-    def getStream(self, field_type, context, view):
+    def getStream(self, field_type, context, params):
         stream_id = interpolateString(field_type.streamTemplate,
                                       {'context': context})
-        return view.site.retrieveStream(stream_id)
+        return params['site'].retrieveStream(stream_id)
 
     def __call__(self, field_type, context, view):
         for dependency in field_type.dependencies:
@@ -63,6 +63,14 @@ class QPSItemChoice(Choice):
     labelTemplate = '%(getattr(item, "title", item.id))s'
     converter = QPSItemConverter()
     optionsRetriever = QPSStreamOptions()
+    noneSelectedError = 'No item selected'
+
+    def fromForm(self, field_name, form_content, context, params):
+        value, error = self.converter.fromForm(
+                        self, form_content[field_name.inForm], context, params)
+        if value is None and not self.allowNone:
+            return {}, {field_name.inForm: self.noneSelectedError}
+        return {field_name: value}, {}
 
 
 class QPSItemMultipleChoice(MultipleChoice):

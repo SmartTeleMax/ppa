@@ -1,4 +1,4 @@
-# $Id: _TALCommon.py,v 1.3 2004/04/12 09:38:22 ods Exp $
+# $Id: _TALCommon.py,v 1.4 2004/05/11 14:09:16 ods Exp $
 
 from TAL.TALDefs import TALESError
 from TAL.TALGenerator import TALGenerator

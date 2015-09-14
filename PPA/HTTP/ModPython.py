@@ -1,4 +1,4 @@
-# $Id: ModPython.py,v 1.16 2004/02/06 15:17:16 corva Exp $
+# $Id: ModPython.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 import Base
 from mod_python import apache

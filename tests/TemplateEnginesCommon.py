@@ -1,4 +1,4 @@
-# $Id: TemplateEnginesCommon.py,v 1.5 2003/11/25 12:08:52 ods Exp $
+# $Id: TemplateEnginesCommon.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 import unittest, sys
 from cStringIO import StringIO

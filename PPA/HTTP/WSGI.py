@@ -1,4 +1,4 @@
-# $Id: WSGI.py,v 1.2 2006/10/18 11:39:25 ods Exp $
+# $Id: WSGI.py,v 1.3 2006/10/18 12:38:56 corva Exp $
 
 '''Adapter for use in WSGI (Python Web Server Gateway Interface) servers.
 See http://www.python.org/dev/peps/pep-0333/ for more information about WSGI.

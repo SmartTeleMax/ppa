@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# $Id: testTemplate.py,v 1.5 2004/04/12 10:00:16 ods Exp $
+# $Id: testTemplate.py,v 1.6 2005/03/19 09:53:59 ods Exp $
 
 import unittest, sys, os, codecs
 from glob import glob

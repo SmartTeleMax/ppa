@@ -1,4 +1,4 @@
-# $Id: Base.py,v 1.4 2006/10/18 12:38:56 corva Exp $
+# $Id: Base.py,v 1.5 2006/10/18 13:39:33 ods Exp $
 
 '''Define base classes Headers, Request, Response, Adapter'''
 import logging

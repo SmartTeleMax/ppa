@@ -1,4 +1,4 @@
-# $Id: PythonEmbedded.py,v 1.7 2005/04/11 09:52:25 ods Exp $
+# $Id: PythonEmbedded.py,v 1.8 2005/05/03 09:42:06 corva Exp $
 
 import string, re
 

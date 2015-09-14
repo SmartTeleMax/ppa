@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: testHTTPHeaders.py,v 1.3 2004/04/12 10:00:16 ods Exp $
+# $Id: testHTTPHeaders.py,v 1.4 2004/10/20 15:02:43 ods Exp $
 
 import unittest, sys, os
 

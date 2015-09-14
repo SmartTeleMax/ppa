@@ -1,4 +1,4 @@
-# $Id: PySI.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
+# $Id: PySI.py,v 1.2 2005/11/17 23:14:12 corva Exp $
 
 '''Python-style string interpolation'''
 

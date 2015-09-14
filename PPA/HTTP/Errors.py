@@ -1,4 +1,4 @@
-# $Id: Errors.py,v 1.7 2004/03/05 08:11:23 ods Exp $
+# $Id: Errors.py,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 import cgi
 

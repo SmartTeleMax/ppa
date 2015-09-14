@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# $Id: update_registry,v 1.4 2003/11/25 12:08:52 ods Exp $
+# $Id: update_registry,v 1.1.1.1 2004/04/09 13:18:11 ods Exp $
 
 import os, sys
 from glob import glob
