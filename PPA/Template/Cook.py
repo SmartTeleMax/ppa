@@ -35,7 +35,7 @@ def quoteJS(text):
     text = text.replace('\r\n', '\\n');
     text = text.replace('\'', '&#39;')
     return text
-    
+
 
 class Repeat:
 

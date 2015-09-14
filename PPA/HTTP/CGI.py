@@ -45,10 +45,10 @@ class Request(Base.Request):
 
     def protocol(self):
         return self._environ['SERVER_PROTOCOL']
-        
+
     def method(self):
         return self._environ['REQUEST_METHOD'].upper()
-    
+
     def uri(self):
         if self._environ.has_key('REQUEST_URI'):
             # This variable is not part of CGI/1.1 standard (available in

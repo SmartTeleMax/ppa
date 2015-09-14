@@ -26,10 +26,10 @@ class QPSItemConverter(Converter):
         if value is None:
             return ''
         return value.fields.id.convertToString(value.id, value)
-        
+
 
 class QPSItemReference(ScalarField):
-    
+
     allowNone = True
     default = None
     streamTemplate = None
@@ -226,7 +226,7 @@ class ItemToVarListEventGenerator(EventGenerator):
             onload.append(
                 interpolateString(
                     self.onloadTmpl,
-                    {'node_id': field_name.inForm+'-%s-%s' % 
+                    {'node_id': field_name.inForm+'-%s-%s' %
                                                         (self.suffix, index),
                      'event_name': field_name.inForm+'-%s' % self.suffix,
                      'field_name': field_name.inForm,

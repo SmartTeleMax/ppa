@@ -27,7 +27,7 @@ class Engine(_TALCommon.Engine):
             self.nsStack = []
             self.nsDict = {XML_NS: 'xml'}
             self.nsNew = []
-    
+
     def compileString(self, source, template_name, get_template):
         cengine = _TALCommon.Compiler()
         generator = TALGenerator(cengine, self._xml)

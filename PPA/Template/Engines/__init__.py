@@ -13,7 +13,7 @@ class EngineImporter:
 
     def __init__(self, engines_by_type = enginesByType):
         self._engines_by_type = enginesByType
-    
+
     def __call__(self, template_type):
         '''Return module of engine by its type'''
         try:

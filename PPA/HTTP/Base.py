@@ -194,7 +194,7 @@ class Adapter:
     of this adapter provide same interface for all supported web-protocols.
 
     There are two ways to use it:
-    
+
     1) Initialize protocol's Adapter with function. This function will be
        called for every HTTP request with two arguments: request and response
        objects.

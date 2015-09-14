@@ -8,11 +8,11 @@ logger = logging.getLogger(__name__)
 class Writer:
     """Fast, but incompatible StringIO.StringIO implementation. Only supports
     write and getvalue methods"""
-    
+
     def __init__(self):
         self.parts = []
         self.write = self.parts.append
-    
+
     def getvalue(self):
         return ''.join(self.parts)
 
@@ -105,7 +105,7 @@ class FieldName(str):
 
 class ACFilter:
     '''Access control filter.
-    
+
     show    - either None (don't show) or string with render class
     accept  - True if field have to be accepted from form
     '''
@@ -139,7 +139,7 @@ class Field(object):
 
     def fromCode(self, value, params):
         return value
-    
+
     def getDefault(self, field_name, context, params):
         return {field_name: self.fromCode(self.default, params)}
 
@@ -157,7 +157,7 @@ class Field(object):
     def prepareNamespace(self, field_name, form_content, errors,
                          requisites, context, filter, params,
                          template_selector, global_namespace={}):
-        return {'fieldName': field_name.inForm, 'fieldType': self, 
+        return {'fieldName': field_name.inForm, 'fieldType': self,
                 'content': form_content, 'errors': errors, 'params': params}
 
     def render(self, field_name, form_content, errors, requisites,
@@ -225,9 +225,9 @@ class Converter:
 
 
 class ScalarField(Field):
-    
+
     converter = Converter()
-    
+
     def fromForm(self, field_name, form_content, context, params):
         value, error = self.converter.fromForm(
                         self, form_content[field_name.inForm], context, params)
@@ -279,7 +279,7 @@ class FieldGroup(Field):
             new_filter = filter(subfield_type, subfield_name, context)
             if new_filter.show is not None:
                 subfields[subfield_name] = subfield_type.render(
-                    new_name, form_content, errors, 
+                    new_name, form_content, errors,
                     requisites, context, new_filter, params,
                     template_selector, global_namespace)
         return local_namespace
@@ -371,7 +371,7 @@ class View:
                 'Cook'          : Cook}
     globalNamespace = CachedClassAttribute(globalNamespace)
 
-    def __init__(self, field_group, get_template, template_name='view', 
+    def __init__(self, field_group, get_template, template_name='view',
                  event_template_name='event', parse_event=FormEventParser(),
                  global_namespace=None, content_type='text/html',
                  charset=None):
@@ -388,13 +388,13 @@ class View:
 
     def createRequisites(self):
         return {}
-    
+
     def render(self, form_content, errors, context, filter=ACFilter(),
                params=None):
         requisites = self.createRequisites()
         content = self.fieldGroup.render(
-                                FieldName(), form_content, errors, 
-                                requisites, context, filter, params, 
+                                FieldName(), form_content, errors,
+                                requisites, context, filter, params,
                                 self.templateSelector, self.globalNamespace)
         template = self.getTemplate(self.templateName)
         fp = Writer()

@@ -74,7 +74,7 @@ class EndOfRequest(Exception):
 </body>
 </html>'''
     _body_content_type = 'text/html'
-    
+
     def sendBody(self, response, message):
         response.setContentType(self._body_content_type)
         response.write(self._body_template % {
@@ -93,7 +93,7 @@ class Redirect(EndOfRequest):
         EndOfRequest.handle(self, request, response)
         response.headers['Location'] = self.uri
         quoted_uri = cgi.escape(self.uri, 1)
-        self.sendBody(response, 
+        self.sendBody(response,
             'Document moved here: <a href="%s">%s</a>.' % (quoted_uri,
                                                            quoted_uri))
 

@@ -14,7 +14,7 @@ class HeadersTest(unittest.TestCase):
         self.assertEqual(len(seq1), len(seq2))
         for item in seq1:
             self.failUnless(item in seq2)
-    
+
     def testInitStr(self):
         '''Headers.__init__, Headers.__str__'''
         h = Headers({'key': 'value'})

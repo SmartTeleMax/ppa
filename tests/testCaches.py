@@ -82,7 +82,7 @@ class MemoryCacheTest(unittest.TestCase):
         cache.store(('name', 'type'), template)
         self.assertEqual(cache.retrieve(('name', 'type')), template)
         self.assertEqual(cache.retrieve(('name', None)), template)
-            
+
 
 
 def testSuite():

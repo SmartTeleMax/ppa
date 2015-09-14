@@ -29,7 +29,7 @@ class Adapter(Base.Adapter):
     port = 4000
     max_children = 5
     base_path = ''
-    
+
     def __init__(self):
         server = scgi_server.SCGIServer(handler_class=self.__handler_class,
                                         host=self.host, port=self.port,

@@ -8,7 +8,7 @@ class Chain(Converter):
     def __init__(self, *args, **kwargs):
         self.chain = args
         Converter.__init__(self, **kwargs)
-    
+
     def fromForm(self, field_type, value, context, params):
         for converter in self.chain:
             value, error = converter.fromForm(field_type, value,
@@ -29,7 +29,7 @@ class Length(Converter):
     min = 0
     max = 255
     error = 'Length error'
-    
+
     def fromForm(self, field_type, value, context, params):
         if self.min<=len(value)<=self.max:
             return value, None

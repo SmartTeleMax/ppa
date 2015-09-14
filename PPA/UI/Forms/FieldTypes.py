@@ -4,7 +4,7 @@ import Converters
 import sys, itertools, logging
 logger = logging.getLogger(__name__)
 from PPA.Utils import interpolateString
-            
+
 
 class String(ScalarField):
 
@@ -12,7 +12,7 @@ class String(ScalarField):
 
 
 class Integer(ScalarField):
-    
+
     allowNone = False
     default = 0
     converter = Converters.Number(type=int, minValue=-sys.maxint-1,
@@ -76,17 +76,17 @@ class Choice(ScalarField):
 class MultipleChoice(Choice): # this shouldn't be, MultipleChoice is no Scalar
     def fetch(self, form, field_name, context, params):
         return {field_name.inForm: form.getlist(field_name.inForm)}
-    
+
     def fromForm(self, field_name, form_content, context, params):
         result_value = []
         options_dict = dict(self.getOptions(context, params))
-        
+
         for i in form_content[field_name.inForm]:
             value, error = self.converter.fromForm(
                 self, i, context, params)
             if options_dict.has_key(value):
                 result_value.append(value)
-        
+
         if not result_value and not self.allowNone:
             return {}, {field_name.inForm: self.noneSelectedError}
         return {field_name: result_value}, {}
@@ -97,7 +97,7 @@ class MultipleChoice(Choice): # this shouldn't be, MultipleChoice is no Scalar
         for i in context.value[field_name]:
             value.append(self.converter.toForm(self, i))
         return {field_name.inForm: value}
-    
+
 
 class Password(ScalarField):
     from md5 import new as digest # may be digest class or None
@@ -106,7 +106,7 @@ class Password(ScalarField):
     def accept(self, form, field_name, context, filter, params):
         confirm_name = field_name.child(field_name+'-confirm', branch=False)
         old_value = context.value[field_name]
-        
+
         fc = {}
         fc.update(self.fetch(form, field_name, context, params))
         fc.update(self.fetch(form, confirm_name, context, params))
@@ -128,7 +128,7 @@ class Password(ScalarField):
         else:
             return fc, {field_name: old_value}, {}
 
-        
+
 class FixedList(Field):
 
     itemField = String()
@@ -301,7 +301,7 @@ class Container(Field):
 class EventGenerator:
     eapiName = "eapi"
     onloadTmpl = """Event.observe('%(field_name)s-control', '%(field_action)s', function () {%(eapi)s.sendEvent('%(event_name)s', %(values)s)});"""
-    
+
     def __init__(self, eventName, eventAction='change', dependencies=[]):
         self.name = eventName
         self.action = eventAction
@@ -313,7 +313,7 @@ class EventGenerator:
         return '[%s]' % ', '.join(
             ["%s.fields.extractValue('%s')" % (self.eapiName, i,) \
              for i in deps])
-        
+
 
     def __call__(self, field_type, field_name, form_content, errors,
                  requisites, context, filter, params):
@@ -372,10 +372,10 @@ class RenderEventHandler(EventHandler):
         content = field_type.render(field_name, form_content, {}, requisites,
                                     context, filter, params,
                                     template_selector, global_namespace)
-        return ['Element.replace("%s-container", %s)' % (field_name, 
+        return ['Element.replace("%s-container", %s)' % (field_name,
                                                          JSString(content))]+\
                requisites.get('onload', [])
-    
+
 
 class Placeholder(Field):
 
@@ -407,7 +407,7 @@ class SwitchField(Field):
             return self.optionSpecs[value]
         except KeyError:
             return self.defaultOptionSpec
-    
+
     def getDefault(self, field_name, context, params):
         spec = self.optionSpec(context)
         return spec.getDefault(field_name, context, params)
@@ -480,7 +480,7 @@ class File(Field):
 
         def __nonzero__(self):
             return bool(self.url or self.tmpname)
-        
+
 
     default = _File()
 
@@ -492,7 +492,7 @@ class File(Field):
 
     def accept(self, form, field_name, context, filter, params):
         import os.path
-        
+
         sources = []
         fc = {}
         url_field_name = field_name.child(field_name+'-url', branch=False)
@@ -576,7 +576,7 @@ class Image(File):
     height = None
     action = None # 'resize' or 'thumb'
     filter = "ANTIALIAS" # getattr(PIL.Image, filter)
-    
+
     def checkFile(self, field_name, path, name, context, params):
         import PIL.Image, os
         try:
@@ -604,7 +604,7 @@ class Image(File):
         ratio.
 
         Returns tuple (image (PIL.Image|None), error (str|None))"""
-        
+
         import PIL.Image
         filter = getattr(PIL.Image, self.filter)
         orig_image = image
@@ -619,9 +619,9 @@ class Image(File):
         return image, None
 
     def _transform_thumb(self, image):
-        """Thumbnails (resize+crop) image (PIL.Image) 
+        """Thumbnails (resize+crop) image (PIL.Image)
         to self.width, self.height with ratio self.width X self.height.
-        
+
         Returns tuple (image (PIL.Image|None), error (str|None))"""
         w, h = image.size
         if w > self.width or h > self.height:
@@ -633,7 +633,7 @@ class Image(File):
                 return image, None
         else:
             return image, None
-        
+
     def _thumbnail(self, image):
         import PIL.Image
         filter = getattr(PIL.Image, self.filter)
@@ -807,7 +807,7 @@ class VarList(Field):
     allowDelete = True
     allowInsert = True
     allowAppend = True
-    
+
     def itemFieldName(self, field_name, index):
         return field_name.child('%s-%d' % (field_name, index),
                                 branch=False)

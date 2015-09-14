@@ -30,7 +30,7 @@ class TemplateTestCase(unittest.TestCase):
         self.locals = locals
         self.templates_path = templates_path
         self.results_path = results_path
-    
+
     def runTest(self):
         source_finder = FileSourceFinder([self.templates_path],
                                          file=self.reader)
@@ -95,7 +95,7 @@ _list_of_tests = [
                                   'var': 'local'}),
     ('test6',  'raw',   None,    {}, {}),
     ('test6',  None,    None,    {}, {}),
-    ('test7',  'pysi',  None,    {'var': 'global'}, 
+    ('test7',  'pysi',  None,    {'var': 'global'},
                                  {'title': 'Just a title',
                                   'body': ['para1', 'para2', 'para3'],
                                   'max_paras': 2, 'var': 'local'}),

@@ -21,7 +21,7 @@ class FormTest(unittest.TestCase):
         def handle(self, request, response):
             form = Form(request)
             self.form_dict = form._dict
-    
+
     def runCGI(self, method='GET', query_string=None, content_type=None,
                data=''):
         environ = {
@@ -46,7 +46,7 @@ class FormTest(unittest.TestCase):
             del os.environ[key]
         os.environ.update(orig_environ)
         return app.form_dict
-    
+
     def testGET(self):
         self.assertEqual(self.runCGI(query_string='a=1&b=2'),
                          {'a': ['1'], 'b': ['2']})

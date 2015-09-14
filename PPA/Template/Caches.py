@@ -7,7 +7,7 @@
 # we want use 'em in long running custom server or under mod_python.
 # XXX Timestamp control should be in separate class! It's interesting to use
 # nested LimitedMemoryCache without reloading and BSDDBCache (SQLCache?) with
-# reloading. 
+# reloading.
 # XXX We need filename to stat or callback method recieved by controller from
 # source finder.
 # XXX We need reference to Controller (or SourceFinder?) to reload? Or just

@@ -12,9 +12,9 @@ class Form(object):
     keepBlankValues = 0
     charset = None
     charsetErrors = 'replace'
-    
+
     __cache = WeakKeyDictionary()
-    
+
     def __new__(cls, request):
         if not cls.__cache.has_key(request):
             cls.__cache[request] = self = object.__new__(cls)
@@ -46,7 +46,7 @@ class Form(object):
             elif content_type=='multipart/form-data':
                 # XXX Use boundary parameter from header.
                 self.parseMultipart(request, content_length)
-    
+
     def parseURLEncoded(self, request, content_length=None):
         if content_length is None:
             body = request.read(self.maxContentLength+1)

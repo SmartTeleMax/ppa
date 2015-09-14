@@ -27,7 +27,7 @@ class DummySourceFinder:
 
 class TemplateDirectory(str):
     '''Incapsulates directory name and charset of files within it'''
-    
+
     def __new__(cls, directory, charset=None):
         inst = str.__new__(cls, directory)
         inst.charset = charset
@@ -38,7 +38,7 @@ class TemplateDirectory(str):
             return codecs.getreader(self.charset)(file)
         else:
             return file
-        
+
 
 # XXX Should the finder know about where to get enginesByType? I guess no. We
 # may replace None with full list of types we can handle. This is much more
@@ -49,7 +49,7 @@ class FileSourceFinder:
     def __init__(self, search_dirs):
         """search_dirs is a list of TemplateDirectory instances"""
         self._search_dirs = search_dirs
-    
+
     def find(self, template_name, template_type=None):
         from Engines import enginesByType
         if template_type is None:

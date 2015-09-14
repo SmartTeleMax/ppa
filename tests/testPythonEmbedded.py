@@ -13,7 +13,7 @@ class PyEmParserTestCase(unittest.TestCase):
 
     def _parse(self, s):
         return Parser(s).process()
-    
+
     def testRawHTML(self):
         '''Parsing raw HTML'''
         raw_html = '''\

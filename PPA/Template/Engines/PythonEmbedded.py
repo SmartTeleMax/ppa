@@ -33,12 +33,12 @@ class CompileError(Error): pass
 
 
 class Parser:
-    
+
     def __init__(self, s, filename='?'):
         self.string = s
         self.filename = filename
         self.length = len(self.string)
-    
+
     def process(self):
         self.cur_pos = 0
         self.parts = []
@@ -47,13 +47,13 @@ class Parser:
         while state!='EOF':
             state = getattr(self, 'process_'+state)()
         return self.parts
-    
+
     def report_error(self, message, pos=None):
         if pos is None:
             pos = self.cur_pos
         line = self.string.count('\n', 0, pos) + 1
         raise ParseError(message, self.filename, line)
-    
+
     def process_html(self):
         pos = self.string.find('<%', self.cur_pos)
         if pos<0:
@@ -106,7 +106,7 @@ class Parser:
         assert self.string[pos:pos+2]=='%>', [self.string[pos:]]
         self.cur_pos = pos+2
         return 'html'
-    
+
 
 def compile_unicode(source, filename, method):
     '''Compile Python source represented as unicode object. All string
@@ -146,7 +146,7 @@ class Compiler:
     def __init__(self, source, filename):
         self.source = source
         self.filename = filename
-        
+
     def process(self):
         parser = Parser(self.source, self.filename)
         self.content = content = []
@@ -178,7 +178,7 @@ class Compiler:
 class Writer:
     """Wraps fp.write fuction, most file objects accept only string values
     for write"""
-    
+
     def __init__(self, fp):
         self.write = fp.write
     def __call__(self, object):
@@ -188,11 +188,11 @@ class Writer:
 class Engine:
 
     type = 'pyem'
-        
+
     def compileString(self, source, template_name, get_template):
         c = Compiler(source, '.'.join((template_name, self.type)))
         return c.process()
-    
+
     def compileFile(self, fp, template_name, get_template):
         return self.compileString(fp.read(), template_name, get_template)
 
