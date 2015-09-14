@@ -18,23 +18,23 @@ class Request(CGI.Request):
 
 class WSGIFileObject:
     def write(self, *args, **kwargs):
-	raise RuntimeError('WSGI start_response was not called yet')
+        raise RuntimeError('WSGI start_response was not called yet')
 
 
 class Response(CGI.Response):
     def __init__(self, request, start_response, buffered=1):
-	self._start_response = start_response
-	CGI.Response.__init__(self, request, WSGIFileObject(), buffered)
+        self._start_response = start_response
+        CGI.Response.__init__(self, request, WSGIFileObject(), buffered)
 
     def _write_status(self):
-	# All work is done by _write_headers
-	pass
+        # All work is done by _write_headers
+        pass
 
     def _write_headers(self):
-	status = "%d %s" % (self._status,
+        status = "%d %s" % (self._status,
                             self.statusCodes.get(self._status, 'Unknown'))
-	self._fp.write = self._start_response(status, self.headers._headers)
-	
+        self._fp.write = self._start_response(status, self.headers._headers)
+
 
 class Adapter(Base.Adapter):
     """WSGI adapter handles abstraction for WSGI protocol. __call__ method
@@ -52,10 +52,10 @@ class Adapter(Base.Adapter):
     from flup.server.fcgi_fork import WSGIServer
     WSGIServer(wsgi_app).run()
     """
-    
+
 
     def __call__(self, environ, start_response):
         request = Request(environ, environ['wsgi.input'])
-        response = Response(request, start_response, buffered=1)	        
+        response = Response(request, start_response, buffered=1)
         Base.Adapter.__call__(self, request, response)
-	return []
+        return []
